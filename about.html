@@ -6,23 +6,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.cdnfonts.com/css/the-amazing-spider-man" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <title>khushichow</title>
-</head>
+    <style>
+        .content {
+            display: flex;
+            justify-content: space-between;
+            padding: 30px;
+        }
+        .about-me {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .about-image {
+            width: 350px;
+            height: auto;
+        }
 
+        img {
+            max-width: 300px;
+            max-height: auto;
+        }
+        img:hover {
+            transform: scale(1.1); /* Zoom in the image on hover */
+            opacity: 0.8;
+        }
+
+    </style>
+    <title style="color:#002d80">About Me</title>
+</head>
 <body>
 
     <nav>
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="about.html">About</a></li>
-            <li><a href="projects.html">Projects</a></li>
         </ul>
     </nav>
 
-    <div class="waiting" style ="text-align: center;">
-        <h1>
-            COMING SOON
-        </h1>
+    <div class="content">
+        <div class="about-me">
+            <h2>About Me</h2>
+            <p>Hi! My name is Khushi and I’m a 4th year Computer Science student at Toronto Metropolitan University minoring in English.</p>
+            <p>Personally, what got me interested in Computer Science was the ability to make something with code, whether it be designing a website or understanding the components of a random card game, it is something so enjoyable to me, especially building around my interests:)</p>
+            <p>As for English, I've taken many courses that interest me to further my writing career, in addition to the required courses, :/ I've taken courses like popular literature which covered comics, novels and shows as well as game design which covered narratives in video games and creative writing.</p>
+            <p>As I navigate through my final year of my undergrad, I'm excited to merge my passions into meaningful projects as well as work with more amazing people and continue to grow my portfolio!</p>
+        </div>
+        <div class="about-image">
+            <a href="https://app.thestorygraph.com/profile/khushichow">
+                <img src="about.jpg" alt="khushi">
+            </a>
+        </div>
+        
     </div>
+
+    <div class="footer animate__animated animate__fadeIn"> 
+        <h2>Contact Me!</h2> 
+        <div class="social-icons">
+            <a href="https://linkedin.com/in/yourprofile/" target="_blank"><i class="fa fa-linkedin"></i></a>
+            <a href="https://instagram.com/yourprofile/" target="_blank"><i class="fa fa-instagram"></i></a>
+            <a href="https://github.com/yourprofile" target="_blank"><i class="fa fa-github"></i></a>
+            <a href="mailto:youremail@example.com" target="_blank"><i class="fa fa-envelope"></i></a>
+        </div>
+    </div>
+
 </body>
 </html>
