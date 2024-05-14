@@ -19,17 +19,30 @@
         .about-image {
             width: 350px;
             height: auto;
+            text-align: center; /* Center the image horizontally */
+            margin: 0 auto; /* Center the image horizontally */
         }
 
         img {
             max-width: 300px;
             max-height: auto;
+            display: block; /* Ensure the image is a block element */
+            margin: 0 auto; /* Center the image horizontally */
         }
         img:hover {
             transform: scale(1.1); /* Zoom in the image on hover */
             opacity: 0.8;
         }
 
+        /* Media Query for screens smaller than 600px */
+        @media only screen and (max-width: 600px) {
+            .content {
+                flex-direction: column; /* Change flex direction to column on small screens */
+            }
+            .about-me {
+                margin-right: 0; /* Remove margin-right to allow full width on small screens */
+            }
+        }
     </style>
     <title style="color:#002d80">About Me</title>
 </head>
