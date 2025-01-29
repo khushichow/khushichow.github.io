@@ -1,80 +1,86 @@
 body {
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #dab5b5;
+  background-color: #f8f9fa; /* Light background for a clean look */
 }
 
-nav {
-  text-align: center;
-  margin-top: 20px;
+/* Header Styles */
+header {
+  background-color: #D8BFD8; /* Soft lavender background */
+  color: #343a40;
 }
 
-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+header h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
 }
 
-nav li {
-  display: inline-block;
-  margin: 0 15px;
+header p {
+  font-size: 1.25rem;
+  font-weight: 400;
 }
 
-nav a {
-  text-decoration: none;
-  color: #9e1010;
-  font-weight: bold;
-  font-size: 18px;
+/* Blog Section */
+section.bg-white {
+  padding: 2.5rem 0;
 }
 
-.header {
-  text-align: center;
-  margin-top: 50px;
+section.bg-white h2 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #FF99BE; /* Soft pink */
 }
 
-.header img {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 5px solid #002d80;
-  margin-bottom: 20px;
+section.bg-white p {
+  color: #6c757d;
+  font-size: 1.1rem;
 }
 
-.header .text {
-  display: block;
+/* Sidebar Widgets */
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.header h1 {
-  margin: 0;
-  padding: 0;
-  line-height: 1.2;
-  font-size: 60px;
-  color: #093486;
-  text-align: center;
+.card h4 {
+  color: #FF99BE; /* Soft pink */
 }
 
-.footer {
-  text-align: center;
-  margin-top: 50px;
+.card ul {
+  padding-left: 0;
 }
 
-.footer h2 {
-  font-size: 24px;
-  color: #093486;
+.card li {
+  list-style: none;
+  margin-bottom: 10px;
 }
 
-.social-icons {
-  margin-top: 20px; 
+.card li a {
+  color: #D3D3D3; /* Soft gray for links */
 }
 
-.footer a {
-  display: inline-block;
-  margin: 10px;
-  text-decoration: none;
+.card li a:hover {
+  color: #FF99BE; /* Soft pink on hover */
 }
 
-.footer i {
-  color: #093486;
-  font-size: 32px;
+/* Footer Section */
+footer {
+  background-color: #343a40;
+  color: white;
+}
+
+footer h4 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.social-icons a {
+  margin: 0 10px;
+  color: white;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #FF99BE; /* Soft pink for hover effect */
 }
