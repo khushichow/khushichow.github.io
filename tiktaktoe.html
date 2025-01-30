@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background-color: #fff;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cell:hover {
+            background-color: #f9f9f9;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        label {
+            margin-bottom: 15px;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #scores {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Tic-Tac-Toe</h2>
+    <label>Choose which player starts (X or O): 
+        <select id="playerSelect">
+            <option value="X">X</option>
+            <option value="O">O</option>
+        </select>
+    </label>
+    <div class="grid" id="gameBoard">
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+        <div class="cell" data-index="9"></div>
+    </div>
+    <button onclick="resetGame()">Reset Game</button>
+    <p id="result"></p>
+    <div id="scores">
+        <p>Player X Wins: <span id="xWins">0</span></p>
+        <p>Player O Wins: <span id="oWins">0</span></p>
+    </div>
+
+    <script>
+        let moves = Array(9).fill(null);
+        let currentPlayer;
+        let gameActive = true;
+        let xWins = 0;
+        let oWins = 0;
+        const winCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function checkWin() {
+            for (const combination of winCombinations) {
+                const [a, b, c] = combination;
+                if (moves[a] && moves[a] === moves[b] && moves[a] === moves[c]) {
+                    gameActive = false;
+                    return moves[a];
+                }
+            }
+            return moves.includes(null) ? null : 'Tie';
+        }
+
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.addEventListener('click', function () {
+                if (gameActive && !moves[this.dataset.index - 1]) {
+                    moves[this.dataset.index - 1] = currentPlayer;
+                    this.textContent = currentPlayer;
+                    const result = checkWin();
+                    if (result) {
+                        document.getElementById("result").textContent = result === 'Tie' ? 'It\'s a Tie!' : `${result} wins!`;
+                        if (result === 'X') {
+                            xWins++;
+                            document.getElementById("xWins").textContent = xWins;
+                        } else if (result === 'O') {
+                            oWins++;
+                            document.getElementById("oWins").textContent = oWins;
+                        }
+                    } else {
+                        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    }
+                }
+            });
+        });
+
+        function resetGame() {
+            currentPlayer = document.getElementById("playerSelect").value;
+            moves.fill(null);
+            gameActive = true;
+            document.getElementById("result").textContent = '';
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+        }
+
+        // Initialize the game
+        resetGame();
+    </script>
+</body>
+</html>
