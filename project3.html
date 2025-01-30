@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback System with IndexedDB</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 50px; 
+        }
+        input, textarea, button { 
+            margin: 10px; 
+            padding: 10px; 
+            width: 80%; 
+            max-width: 400px; 
+        }
+        #feedbackList {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .feedback-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            position: relative;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-button {
+            display: none;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #passwordInput {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Feedback System</h2>
+    <div id="passwordInput">
+        <input type="password" id="password" placeholder="Password to Delete" oninput="toggleDeleteButtons()">
+    </div>
+    <form id="feedbackForm">
+        <input type="text" id="name" placeholder="Your Name" required><br>
+        <textarea id="feedback" placeholder="Your Feedback" required></textarea><br>
+        <button type="button" onclick="submitFeedback()">Submit Feedback:) Be careful, you cant delete it!</button>
+    </form>
+    <div id="feedbackList"></div>
+
+    <script>
+        let db;
+        const dbName = 'feedbackDB';
+        const storeName = 'feedbackStore';
+        const deletePassword = "khushichow";  
+
+        async function initDatabase() {
+            const SQL = await initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm` });
+            const openRequest = indexedDB.open(dbName, 1);
+
+            openRequest.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+            };
+
+            openRequest.onsuccess = (event) => {
+                const idb = event.target.result;
+                const transaction = idb.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                store.getAll().onsuccess = (event) => {
+                    const records = event.target.result;
+                    if (records.length > 0) {
+                        const arrayBuffer = records[0].data;
+                        db = new SQL.Database(new Uint8Array(arrayBuffer));
+                    } else {
+                        db = new SQL.Database();
+                        db.run("CREATE TABLE feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, feedback TEXT);");
+                    }
+                    displayFeedback();
+                };
+            };
+
+            openRequest.onerror = (event) => {
+                console.error('IndexedDB error:', event.target.errorCode);
+            };
+        }
+
+        async function submitFeedback() {
+            if (!db) return alert("Database not loaded yet!");
+
+            const name = document.getElementById("name").value;
+            const feedback = document.getElementById("feedback").value;
+
+            if (!name || !feedback) {
+                alert("Name and feedback cannot be empty.");
+                return;
+            }
+
+            const insertSQL = "INSERT INTO feedback (name, feedback) VALUES (?, ?);";
+            db.run(insertSQL, [name, feedback]);
+
+            document.getElementById("name").value = '';
+            document.getElementById("feedback").value = '';
+
+            saveDatabase();
+            displayFeedback();
+        }
+
+        function deleteFeedback(id) {
+            const deleteSQL = "DELETE FROM feedback WHERE id = ?;";
+            db.run(deleteSQL, [id]);
+
+            saveDatabase();
+            displayFeedback();
+        }
+
+        function toggleDeleteButtons() {
+            const enteredPassword = document.getElementById("password").value;
+            const deleteButtons = document.querySelectorAll(".delete-button");
+            deleteButtons.forEach(button => {
+                if (enteredPassword === deletePassword) {
+                    button.style.display = "inline-block";
+                } else {
+                    button.style.display = "none";
+                }
+            });
+        }
+
+        function saveDatabase() {
+            const idb = indexedDB.open(dbName, 1);
+
+            idb.onsuccess = (event) => {
+                const idb = event.target.result;
+                const transaction = idb.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                store.put({ id: 1, data: db.export() });
+            };
+        }
+
+        function displayFeedback() {
+            const result = db.exec("SELECT * FROM feedback ORDER BY id DESC;");
+            const feedbackList = document.getElementById("feedbackList");
+            feedbackList.innerHTML = '';
+
+            if (result.length > 0) {
+                result[0].values.forEach(row => {
+                    const feedbackItem = document.createElement("div");
+                    feedbackItem.classList.add("feedback-item");
+                    feedbackItem.innerHTML = `
+                        <div>
+                            <strong>${row[1]}</strong>
+                            <p>${row[2]}</p>
+                        </div>
+                        <button class="delete-button" onclick="deleteFeedback(${row[0]})">Delete</button>
+                    `;
+                    feedbackList.appendChild(feedbackItem);
+                });
+            } else {
+                feedbackList.innerHTML = '<p>No feedback yet.</p>';
+            }
+
+            toggleDeleteButtons(); // Ensure buttons are toggled correctly based on current password state
+        }
+
+        initDatabase();
+    </script>
+
+</body>
+</html>
