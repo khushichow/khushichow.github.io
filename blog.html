@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog page</title>
+    <title>Blog Page</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -44,30 +44,33 @@
                         <div class="card-body">
                             <h4 class="font-weight-bold" style="color: #FF99BE;">Road Written</h4>
                             <ul class="list-unstyled">
-                                <li><a href="blog2.html" style="color: #D3D3D3;">In Progress: An adventure between 4 strangers who have found eachother on the way of their sucesses.</a></li>
+                                <li><a href="blog2.html" style="color: #D3D3D3;">In Progress: An adventure between 4 strangers who have found each other on their way to success.</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h4 class="font-weight-bold" style="color: #FF99BE;">The Amazing World of Unimportance</h4>
+                            <h4 class="font-weight-bold" style="color: #FF99BE;">The Amazing World of Misunderstanding</h4>
                             <ul class="list-unstyled">
                                 <li><a href="blog1.html" style="color: #D3D3D3;">In Progress: A poetry book about emotions in everyday life.</a></li>
                             </ul>
                         </div>
                     </div>
+                    
+                    <!-- Email Subscription Form -->
                     <div class="card mb-4">
                         <div class="card-body">
                             <h4 class="font-weight-bold" style="color: #FF99BE;">Subscribe</h4>
-                            <form>
+                            <form action="https://formspree.io/f/mzzdgzjk" method="POST">
                                 <div class="form-group">
                                     <label for="email" style="color: #6c757d;">Email address:</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary" style="background-color: #FF99BE;">Subscribe</button>
                             </form>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
