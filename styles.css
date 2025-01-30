@@ -81,6 +81,12 @@ footer h4 {
   transition: color 0.3s;
 }
 
+.social-icons i {
+  font-size: 30px; /* Adjust size as needed */
+  margin: 10px;
+}
+
+
 .social-icons a:hover {
   color: #FF99BE; /* Soft pink for hover effect */
 }
