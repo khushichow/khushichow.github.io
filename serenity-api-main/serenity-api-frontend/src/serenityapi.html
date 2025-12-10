@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>serenity api test</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .resource-item {
+            border: 1px solid #dddddd;
+            margin-bottom: 20px;
+            padding: 30px;
+            text-align: left;
+            position:relative; left:0px; top: 200px
+        }
+
+        .resource-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .location-phone {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 10px;
+        }
+
+        .description-email {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .intended-clients {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #map {
+            height: 400px;
+            width: 600px;
+            position:relative; left:500px; top: 100px
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>serenity api</h1>
+    </header>
+
+        <p id="getLocation"></p>
+        
+        <div id="map"></div>
+        
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW3Zb5CjgV-nEv6-XEYsYNwBTgeSaJ-HA&callback=setMap"
+          type="text/javascript"></script>
+        
+        <script type="text/javascript">
+          var x = document.getElementById("getLocation");
+        
+          function getLocation() {
+            if (navigator.geolocation) 
+            {
+              navigator.permissions.query({ name: "geolocation" }).then(function(permissionStatus) { if (permissionStatus.state == "granted") { setMap(); } });
+            } else {
+              x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+          } 
+            function setMap() {
+              const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+              let labelIndex = 0;
+              navigator.geolocation.getCurrentPosition(function(position) {
+                var location = new google.maps.LatLng(
+                position.coords.latitude, 
+                position.coords.longitude);
+                var map = new google.maps.Map(document.getElementById("map"), { zoom: 14, center: location });  
+                var user = new google.maps.Marker({position: location,map,});
+                var cityHall = new google.maps.Marker({position: {lat: 43.6534, lng: -79.3841},map,});
+        
+        
+                var userInfo = new google.maps.InfoWindow({ content: userInfoText}); 
+                                    user.addListener("click", function() { userInfo.open(map, user); });
+                var cityHallInfo = new google.maps.InfoWindow({ content: cityHallInfoText});
+                                    cityHall.addListener("click", function() { cityHallInfo.open(map, cityHall); });
+        
+               }, showError);
+               
+        
+        } 
+        
+        
+                
+            function showError(error) {
+              switch(error.code) {
+                case error.PERMISSION_DENIED:
+                  x.innerHTML = "User denied the request for Geolocation."
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  x.innerHTML = "Location information is unavailable."
+                  break;
+                case error.TIMEOUT:
+                  x.innerHTML = "The request to get user location timed out."
+                  break;
+                case error.UNKNOWN_ERROR:
+                  x.innerHTML = "An unknown error occurred."
+                  break;
+            }
+          }
+        
+        
+        const userInfoText =
+                '<div id="content">' +
+                "<p>This is where you are located.</p>"
+                "</div>" ;
+        
+        </script>
+
+    <?php include 'nav.php'; ?>
+
+    <?php
+    // Your Oracle database connection details
+    $conn = oci_connect(
+                'k3chowdh',
+                '04014007',
+                '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=oracle12c.scs.ryerson.ca)(Port=1521))(CONNECT_DATA=(SID=orcl12c)))'
+            );
+
+            if (!$conn) {
+                $m = oci_error();
+                echo $m['message'];
+            }
+    $query = "SELECT r.resource_title, l.location, r.phone, r.description, r.email, r.intended_clients
+              FROM Resources r
+              JOIN Locations l ON r.location_id = l.location_id";
+    $stid = oci_parse($conn, $query);
+    $r = oci_execute($stid);
+    ?>
+
+    <?php while ($row = oci_fetch_array($stid, OCI_RETURN_NULLS + OCI_ASSOC)) : ?>
+        <div class="resource-item">
+            <div class="resource-title"><?= $row['RESOURCE_TITLE']; ?></div>
+            <div class="location-phone"><?= $row['LOCATION']; ?> | <?= $row['PHONE']; ?></div>
+            <div class="description-email"><?= $row['DESCRIPTION']; ?> | <?= $row['EMAIL']; ?></div>
+            <div class="intended-clients">Intended Clients: <?= $row['INTENDED_CLIENTS']; ?></div>
+        </div>
+    <?php endwhile; ?>
+
+</body>
+
+</html>
