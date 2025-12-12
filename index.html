@@ -1,112 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khushi Chowdhury</title>
+<meta charset="UTF-8">
+<title>Khushi Chowdhury</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #fff0f5;
+        color: #222;
+    }
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    /* HEADER */
+    #headerSection {
+        text-align: center;
+        background: linear-gradient(135deg, #CC8899, #B57281);
+        color: #fff;
+        position: relative;
+        min-height: 300px;
+        overflow: hidden;
+    }
 
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    .header-content {
+        padding: 80px 20px;
+    }
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    .image-wrapper {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        cursor: pointer;
+    }
+
+    #profile-pic {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    #quitBtn {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 8px 14px;
+        font-size: 16px;
+        background-color: #ff6b81;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    /* ABOUT */
+    #about {
+        max-width: 700px;
+        margin: 60px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    #projects {
+        max-width: 1100px;
+        margin: 60px auto;
+        padding: 0 20px;
+text-align: center;
+    }
+
+    /* PROJECTS GRID */
+    .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+        gap: 25px;
+    }
+
+    .project-card {
+        background: #ffe6f0;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .project-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    }
+
+    .project-card h3 a {
+        color: #B57281;
+        text-decoration: none;
+    }
+
+    .project-card h3 a:hover {
+        text-decoration: underline;
+    }
+
+    /* FOOTER */
+    footer {
+        text-align: center;
+        padding: 40px 0 25px;
+        margin-top: 60px;
+        font-size: 14px;
+        color: #777;
+    }
+
+    .social-icons a {
+        margin: 0 12px;
+        font-size: 28px;
+        color: #B57281;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .social-icons a:hover {
+        opacity: 0.6;
+    }
+</style>
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header class="bg-light text-center py-5" style="background-color: #FF99BE;">
-        <div class="container">
-            <img src="khushi.jpg" alt="Khushi Chowdhury" class="rounded-circle mb-3" width="150" height="150">
-            <h1 style="color: #FF99BE;">Khushi Chowdhury</h1>
-            <p class="lead text-muted">Computer Science Student & Aspiring Writer</p>
+<header id="headerSection">
+    <div class="header-content" id="headerContent">
+        <div class="image-wrapper">
+            <img src="khushi.jpg" id="profile-pic" alt="Khushi Chowdhury">
         </div>
-    </header>
+        <h1>Khushi Chowdhury</h1>
+        <p>Computer Science Graduate</p>
+    </div>
+    <button id="quitBtn">Quit Game</button>
+</header>
 
-    <!-- About Section -->
-    <section class="bg-white py-5"  style="background-color: #FF99BE;">
-        <div class="container text-center">
-            <h2 class="font-weight-bold" style="color: #FF99BE;">About Me</h2>
-            <p class="text-muted">Hi! My name is Khushi and I’m a 4th year Computer Science student at Toronto Metropolitan University minoring in English.
+<!-- ABOUT -->
+<section id="about">
+    <h2>About Me</h2>
+    <p>
+        Hi! I'm Khushi, a new grad computer scientist passionate about databases and full-stack design. 
+        I enjoy building useful tools and being creative with my designs and functionalities.
+    </p>
+</section>
 
-                Personally, what got me interested in Computer Science was the ability to make something with code, whether it be designing a website or understanding the components of a random card game, it is something so enjoyable to me, especially building around my interests:)
-                
-                As for English, I've taken many courses that interest me to further my writing career, in addition to the required courses, :/ I've taken courses like popular literature which covered comics, novels and shows as well as game design which covered narratives in video games and creative writing.
-                
-                As I navigate through my final year of my undergrad, I'm excited to merge my passions into meaningful projects as well as work with more amazing people and continue to grow my portfolio!</p>
+<!-- PROJECTS -->
+<section id="projects">
+    <h2>Projects</h2>
+    <div class="project-grid">
+        <div class="project-card">
+            <h3><a href="tiktaktoe.html">Tiktoktoe</a></h3>
+            <p>Play some tiktaktoe with your friends! It'll keep track of your score, it resets when you refresh.</p>
         </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="py-5 bg-light" style="background-color: #B0E0E6;">
-        <div class="container text-center">
-            <h2 class="font-weight-bold" style="color: #FF99BE;">My Projects</h2>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><a href="serenity-api-main/serenity-api-frontend/src/serenityapi.html" style="color: #666666;">Project 1</a></h5>
-                            <p class="card-text">Open this and search up for the nearest camh centre.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><a href="tiktaktoe.html" style="color: #666666;">Project 2</a></h5>
-                            <p class="card-text">Play some tiktaktoe with your friends! It'll keep track of your score, it resets when you refresh.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><a href="project3.html" style="color: #666666;">Project 3</a></h5>
-                            <p class="card-text">Give me feedback! the password is khushichow if you post something you dont want me to see.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="project-card">
+            <h3><a href="todo.html">To Do List</a></h3>
+            <p>Heres a to do list that organizes your tasks by priority and saves your progress.</p>
         </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section class="py-5" style="background-color: #f8d3e6;">
-        <div class="container text-center">
-            <h2 class="font-weight-bold" style="color: #FF99BE;">Blog</h2>
-            <div class="row">
-                <div class="col-md-12 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><a href="blog.html" style="color: #828282;">Want To See My Writing?</a></h5>
-                            <p class="card-text">Visit my blog!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="project-card">
+            <h3><a href="project3.html">Stored Comments</a></h3>
+            <p>Give me feedback! The password is khushichow if you post something you dont want me to see.</p>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Footer Section -->
-    <footer class="bg-dark text-white text-center py-4">
-        <div class="container">
-            <h4 class="font-weight-bold">Contact Me :)</h4>
-            <div class="social-icons">
-                <a href="https://linkedin.com/in/khushichowdhury/" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
-                <a href="https://instagram.com/khushichow/" target="_blank" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
-                <a href="https://github.com/khushichow" target="_blank" aria-label="GitHub"><i class="fa fa-github"></i></a>
-                <a href="resume.pdf" target="_blank" aria-label="Resume"><i class="fa fa-file"></i></a>
-            </div>
-        </div>
-    </footer>
+<!-- FOOTER -->
+<footer>
+    <div class="social-icons">
+        <a href="https://linkedin.com/in/khushichowdhury/" target="_blank"><i class="fa fa-linkedin"></i></a>
+        <a href="https://github.com/khushichow" target="_blank"><i class="fa fa-github"></i></a>
+        <a href="resume.pdf" target="_blank"><i class="fa fa-file"></i></a>
+    </div>
+    © 2025 Khushi Chowdhury
+</footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+// ---------------- PROFILE PICTURE INTERACTION ----------------
+const profilePic = document.getElementById("profile-pic");
+const headerContent = document.getElementById("headerContent");
+const quitBtn = document.getElementById("quitBtn");
+let snakeCanvas;
+
+profilePic.addEventListener("click", () => {
+    headerContent.style.display = "none";
+    quitBtn.style.display = "block";
+
+    snakeCanvas = document.createElement("canvas");
+    snakeCanvas.id = "snakeCanvas";
+    snakeCanvas.style.border = "5px solid #ffb6c1";
+    snakeCanvas.style.background = "#ffe6f0";
+    snakeCanvas.style.display = "block";
+    snakeCanvas.style.margin = "0 auto 20px auto";
+    headerContent.parentNode.appendChild(snakeCanvas);
+
+    startSnakeGame(snakeCanvas);
+});
+
+quitBtn.addEventListener("click", () => {
+    if(snakeCanvas) snakeCanvas.remove();
+    headerContent.style.display = "block";
+    quitBtn.style.display = "none";
+});
+</script>
+
+<script>
+// ---------------- SIMPLE SNAKE GAME ----------------
+function startSnakeGame(canvas) {
+    const COLS = 15, ROWS = 15; 
+    const EMPTY=0,SNAKE=1,FRUIT=2;
+    const LEFT=0,UP=1,RIGHT=2,DOWN=3;
+    const KEY_LEFT=37,KEY_UP=38,KEY_RIGHT=39,KEY_DOWN=40;
+
+    const size = 400;
+    canvas.width = size;
+    canvas.height = size;
+    const blockSize = size/ROWS;
+
+    let ctx = canvas.getContext("2d");
+
+    let grid = [];
+    for(let x=0;x<COLS;x++){grid[x]=[];for(let y=0;y<ROWS;y++) grid[x][y]=EMPTY;}
+    let snake = [{x:Math.floor(COLS/2), y:ROWS-1}];
+    let dir = UP, nextDir = UP;
+    let score=0;
+    let foodImg = new Image();
+    foodImg.src = "khushi.jpg";
+    let food = {x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS)};
+
+    document.addEventListener("keydown", e => {
+        if([37,38,39,40].includes(e.keyCode)) e.preventDefault();
+        if(e.keyCode===KEY_LEFT && dir!==RIGHT) nextDir=LEFT;
+        if(e.keyCode===KEY_UP && dir!==DOWN) nextDir=UP;
+        if(e.keyCode===KEY_RIGHT && dir!==LEFT) nextDir=RIGHT;
+        if(e.keyCode===KEY_DOWN && dir!==UP) nextDir=DOWN;
+    });
+
+    function resetGame(){
+        snake=[{x:Math.floor(COLS/2), y:ROWS-1}];
+        dir=UP; nextDir=UP;
+        score=0;
+        food={x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)};
+    }
+
+    function update(){
+        dir=nextDir;
+        let head={...snake[0]};
+        if(dir===LEFT) head.x--;
+        if(dir===UP) head.y--;
+        if(dir===RIGHT) head.x++;
+        if(dir===DOWN) head.y++;
+
+        if(head.x<0 || head.x>=COLS || head.y<0 || head.y>=ROWS || snake.some(s=>s.x===head.x && s.y===head.y)){
+            resetGame();
+            return;
+        }
+
+        snake.unshift(head);
+        if(head.x===food.x && head.y===food.y){
+            score++;
+            food={x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)};
+        } else { snake.pop(); }
+    }
+
+    function draw(){
+        ctx.fillStyle="#ffe6f0";
+        ctx.fillRect(0,0,size,size);
+
+        // snake
+        ctx.fillStyle="#ff77aa";
+        snake.forEach(s=>ctx.fillRect(s.x*blockSize, s.y*blockSize, blockSize, blockSize));
+
+        // food
+        let fx = food.x*blockSize, fy = food.y*blockSize;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(fx+blockSize/2, fy+blockSize/2, blockSize/2,0,Math.PI*2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(foodImg, fx, fy, blockSize, blockSize);
+        ctx.restore();
+
+        ctx.fillStyle="#B57281";
+        ctx.font="16px Poppins";
+        ctx.fillText("Score: "+score,10,size-10);
+    }
+
+    function loop(){
+        update();
+        draw();
+        if(canvas.style.display!=="none") setTimeout(loop, 200);
+    }
+    loop();
+}
+</script>
 
 </body>
 </html>
