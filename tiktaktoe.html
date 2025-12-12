@@ -1,164 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
+  <meta charset="UTF-8">
+  <title>Tic-Tac-Toe</title>
 
-        h2 {
-            color: #333;
-        }
+  <!-- Cute rounded font -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 10px;
-        }
+  <style>
+    body {
+      font-family: "Quicksand", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+      background: linear-gradient(135deg, #ffe8f3, #e3f1ff);
+    }
 
-        .cell {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            background-color: #fff;
-            border: 2px solid #333;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2.2em;
+      color: #ff7bb0;
+    }
 
-        .cell:hover {
-            background-color: #f9f9f9;
-        }
+    p {
+      margin-bottom: 30px;
+      color: #6d6d6d;
+      font-size: 1.1em;
+    }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    #modeSelection {
+      margin-bottom: 20px;
+    }
 
-        button:hover {
-            background-color: #555;
-        }
+    button {
+      margin: 5px;
+      padding: 10px 18px;
+      font-size: 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffd0e6, #c7dcff);
+      font-family: "Quicksand", sans-serif;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: 0.2s ease;
+    }
 
-        label {
-            margin-bottom: 15px;
-        }
+    button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
 
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 8px;
+      margin-top: 10px;
+    }
 
-        #scores {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-    </style>
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #ffffffaa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5em;
+      cursor: pointer;
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      transition: background 0.2s ease;
+    }
+
+    .cell:hover {
+      background: #ffeaf4;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 1.3em;
+      color: #ff6ea8;
+      font-weight: 600;
+    }
+
+    #rounds {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #6d6d6d;
+    }
+
+    #resetBtn, #backBtn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+  </style>
 </head>
 
 <body>
-    <h2>Tic-Tac-Toe</h2>
-    <label>Choose which player starts (X or O): 
-        <select id="playerSelect">
-            <option value="X">X</option>
-            <option value="O">O</option>
-        </select>
-    </label>
-    <div class="grid" id="gameBoard">
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-        <div class="cell" data-index="9"></div>
-    </div>
-    <button onclick="resetGame()">Reset Game</button>
-    <p id="result"></p>
-    <div id="scores">
-        <p>Player X Wins: <span id="xWins">0</span></p>
-        <p>Player O Wins: <span id="oWins">0</span></p>
-    </div>
 
-    <script>
-        let moves = Array(9).fill(null);
-        let currentPlayer;
-        let gameActive = true;
-        let xWins = 0;
-        let oWins = 0;
-        const winCombinations = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ];
+<h1>Tic-Tac-Toe</h1>
+<p>Choose your mode and play!</p>
 
-        function checkWin() {
-            for (const combination of winCombinations) {
-                const [a, b, c] = combination;
-                if (moves[a] && moves[a] === moves[b] && moves[a] === moves[c]) {
-                    gameActive = false;
-                    return moves[a];
-                }
-            }
-            return moves.includes(null) ? null : 'Tie';
-        }
+<div id="modeSelection">
+  <button id="singleBtn">Single Player</button>
+  <button id="doubleBtn">Two Player</button>
+</div>
 
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.addEventListener('click', function () {
-                if (gameActive && !moves[this.dataset.index - 1]) {
-                    moves[this.dataset.index - 1] = currentPlayer;
-                    this.textContent = currentPlayer;
-                    const result = checkWin();
-                    if (result) {
-                        document.getElementById("result").textContent = result === 'Tie' ? 'It\'s a Tie!' : `${result} wins!`;
-                        if (result === 'X') {
-                            xWins++;
-                            document.getElementById("xWins").textContent = xWins;
-                        } else if (result === 'O') {
-                            oWins++;
-                            document.getElementById("oWins").textContent = oWins;
-                        }
-                    } else {
-                        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                    }
-                }
-            });
-        });
+<div id="board" style="display:none;">
+  <div class="cell" data-index="0"></div>
+  <div class="cell" data-index="1"></div>
+  <div class="cell" data-index="2"></div>
+  <div class="cell" data-index="3"></div>
+  <div class="cell" data-index="4"></div>
+  <div class="cell" data-index="5"></div>
+  <div class="cell" data-index="6"></div>
+  <div class="cell" data-index="7"></div>
+  <div class="cell" data-index="8"></div>
+</div>
 
-        function resetGame() {
-            currentPlayer = document.getElementById("playerSelect").value;
-            moves.fill(null);
-            gameActive = true;
-            document.getElementById("result").textContent = '';
-            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
-        }
+<div id="message"></div>
+<div id="rounds">Rounds Played: 0</div>
+<button id="resetBtn" style="display:none;">Restart Game</button>
+<button id="backBtn" style="display:none;">Back to Website</button>
 
-        // Initialize the game
-        resetGame();
-    </script>
+<script>
+let board = Array(9).fill(null);
+const cells = document.querySelectorAll('.cell');
+const message = document.getElementById('message');
+const resetBtn = document.getElementById('resetBtn');
+const backBtn = document.getElementById('backBtn');
+const roundsDiv = document.getElementById('rounds');
+
+let mode = null;
+let currentPlayer = 'X';
+let gameOver = false;
+
+// Load rounds
+let rounds = parseInt(localStorage.getItem('ticTacToeRounds')) || 0;
+roundsDiv.textContent = `Rounds Played: ${rounds}`;
+
+const winCombos = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+document.getElementById('singleBtn').addEventListener('click', ()=>{
+  mode = 'single';
+  startGame();
+});
+
+document.getElementById('doubleBtn').addEventListener('click', ()=>{
+  mode = 'double';
+  startGame();
+});
+
+function startGame(){
+  document.getElementById('modeSelection').style.display = 'none';
+  document.getElementById('board').style.display = 'grid';
+  resetBtn.style.display = 'block';
+  backBtn.style.display = 'block';
+  board.fill(null);
+  cells.forEach(c => c.textContent = '');
+  currentPlayer = 'X';
+  gameOver = false;
+  message.textContent = '';
+}
+
+function checkWinner() {
+  for (const combo of winCombos) {
+    const [a,b,c] = combo;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+  }
+  return board.includes(null) ? null : 'Tie';
+}
+
+function handleClick(e) {
+  const idx = e.target.dataset.index;
+  if (!board[idx] && !gameOver) {
+    board[idx] = currentPlayer;
+    e.target.textContent = currentPlayer;
+
+    let winner = checkWinner();
+    if(winner){
+      endRound(winner);
+      return;
+    }
+
+    if(mode === 'single'){
+      setTimeout(()=>{
+        computerMove();
+        const result = checkWinner();
+        if(result) endRound(result);
+      }, 500);
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+  }
+}
+
+function endRound(winner) {
+  gameOver = true;
+  rounds++;
+  localStorage.setItem('ticTacToeRounds', rounds);
+  roundsDiv.textContent = `Rounds Played: ${rounds}`;
+  message.textContent = winner === 'Tie' ? "It's a tie!" : `${winner} wins!`;
+}
+
+function computerMove(){
+  const empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
+  const move = empty[Math.floor(Math.random() * empty.length)];
+  if(move == null) return;
+  board[move] = 'O';
+  cells[move].textContent = 'O';
+}
+
+cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+resetBtn.addEventListener('click', ()=>{
+  board.fill(null);
+  cells.forEach(c => c.textContent = '');
+  currentPlayer = 'X';
+  gameOver = false;
+  message.textContent = '';
+  document.getElementById('modeSelection').style.display = 'block';
+  document.getElementById('board').style.display = 'none';
+  resetBtn.style.display = 'none';
+  backBtn.style.display = 'none';
+});
+
+backBtn.addEventListener('click', ()=>{
+  window.location.href = "index.html";
+});
+</script>
+
 </body>
 </html>

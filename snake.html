@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Khushi Snake Game</title>
+<style>
+body {
+    margin: 0;
+    background: #0b1d2d;
+    font-family: sans-serif;
+}
+canvas {
+    display: block;
+    margin: auto;
+    border: 5px solid #009BFF;
+    background: #0b1d2d;
+}
+</style>
+</head>
+<body>
+<script>
+const COLS = 20; // fewer columns = bigger squares
+const ROWS = 20;
+const EMPTY = 0, SNAKE = 1, FRUIT = 2;
+const LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
+const KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40;
+
+let canvas, ctx, keystate, frames, score;
+let grid, snake;
+
+const blockSize = 30; // size of each block
+
+// LOAD KHUSHI IMAGE
+const foodImg = new Image();
+foodImg.src = "khushi.jpg"; // make sure this exists in the same folder
+
+grid = {
+    width: COLS,
+    height: ROWS,
+    _grid: [],
+    init: function(val, c, r){
+        this.width = c;
+        this.height = r;
+        this._grid = [];
+        for(let x=0; x<c; x++){
+            this._grid.push([]);
+            for(let y=0; y<r; y++){
+                this._grid[x].push(val);
+            }
+        }
+    },
+    set: function(val, x, y){
+        this._grid[x][y] = val;
+    },
+    get: function(x, y){
+        return this._grid[x][y];
+    }
+};
+
+snake = {
+    direction: null,
+    last: null,
+    _queue: null,
+    init: function(d, x, y){
+        this.direction = d;
+        this._queue = [];
+        this.insert(x, y);
+    },
+    insert: function(x, y){
+        this._queue.unshift({x:x, y:y});
+        this.last = this._queue[0];
+    },
+    remove: function(){
+        return this._queue.pop();
+    }
+};
+
+function setFood(){
+    const empty = [];
+    for(let x=0;x<grid.width;x++){
+        for(let y=0;y<grid.height;y++){
+            if(grid.get(x,y)===EMPTY) empty.push({x:x, y:y});
+        }
+    }
+    const randpos = empty[Math.floor(Math.random()*empty.length)];
+    grid.set(FRUIT, randpos.x, randpos.y);
+}
+
+function main(){
+    canvas = document.createElement("canvas");
+    canvas.width = COLS * blockSize;
+    canvas.height = ROWS * blockSize;
+    ctx = canvas.getContext("2d");
+    document.body.appendChild(canvas);
+
+    ctx.font = "20px Helvetica";
+
+    frames = 0;
+    keystate = {};
+
+    document.addEventListener("keydown", e=>{ keystate[e.keyCode]=true; });
+    document.addEventListener("keyup", e=>{ delete keystate[e.keyCode]; });
+
+    init();
+    loop();
+}
+
+function init(){
+    score = 0;
+    grid.init(EMPTY, COLS, ROWS);
+    const sp = {x: Math.floor(COLS/2), y: ROWS-1};
+    snake.init(UP, sp.x, sp.y);
+    grid.set(SNAKE, sp.x, sp.y);
+    setFood();
+}
+
+function loop(){
+    update();
+    draw();
+    window.requestAnimationFrame(loop, canvas);
+}
+
+function update(){
+    frames++;
+
+    if(keystate[KEY_LEFT] && snake.direction!==RIGHT) snake.direction=LEFT;
+    if(keystate[KEY_UP] && snake.direction!==DOWN) snake.direction=UP;
+    if(keystate[KEY_RIGHT] && snake.direction!==LEFT) snake.direction=RIGHT;
+    if(keystate[KEY_DOWN] && snake.direction!==UP) snake.direction=DOWN;
+
+    if(frames%7===0){
+        let nx = snake.last.x;
+        let ny = snake.last.y;
+        switch(snake.direction){
+            case LEFT: nx--; break;
+            case UP: ny--; break;
+            case RIGHT: nx++; break;
+            case DOWN: ny++; break;
+        }
+
+        if(nx<0||nx>=grid.width||ny<0||ny>=grid.height||grid.get(nx,ny)===SNAKE){
+            init(); // restart on collision
+            return;
+        }
+
+        if(grid.get(nx,ny)===FRUIT){
+            score++;
+            setFood();
+        } else {
+            const tail = snake.remove();
+            grid.set(EMPTY, tail.x, tail.y);
+        }
+
+        grid.set(SNAKE, nx, ny);
+        snake.insert(nx, ny);
+    }
+}
+
+function draw(){
+    const tw = canvas.width/grid.width;
+    const th = canvas.height/grid.height;
+
+    for(let x=0;x<grid.width;x++){
+        for(let y=0;y<grid.height;y++){
+            switch(grid.get(x,y)){
+                case EMPTY: ctx.fillStyle="#0b1d2d"; ctx.fillRect(x*tw,y*th,tw,th); break;
+                case SNAKE: ctx.fillStyle="#5a7de0"; ctx.fillRect(x*tw,y*th,tw,th); break;
+                case FRUIT:
+                    ctx.clearRect(x*tw,y*th,tw,th);
+                    // Draw circular food image
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(x*tw+tw/2, y*th+th/2, tw/2, 0, Math.PI*2);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(foodImg, x*tw, y*th, tw, th);
+                    ctx.restore();
+                    break;
+            }
+        }
+    }
+
+    ctx.fillStyle = "#fff";
+    ctx.fillText("SCORE: "+score, 10, canvas.height-10);
+}
+
+main();
+</script>
+</body>
+</html>
+
