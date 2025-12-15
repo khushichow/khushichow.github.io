@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YA Series Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f0f0;
+        color: #222;
+    }
+    h1 {
+        text-align: center;
+        padding: 40px 20px 20px;
+        font-weight: 600;
+        font-size: 2.2rem;
+        color: #333;
+    }
+    #searchBar {
+        width: 90%;
+        max-width: 400px;
+        margin: 0 auto 40px auto;
+        display: block;
+        padding: 12px 15px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.2s ease-in-out;
+    }
+    #searchBar:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        box-shadow: 0 4px 20px rgba(255,107,107,0.3);
+    }
+    .charts-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        padding: 0 20px 60px;
+    }
+    .chart-container {
+        flex: 1 1 320px;
+        max-width: 500px;
+        background: #fff;
+        padding: 25px 20px;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    .chart-container:hover {
+        transform: translateY(-5px);
+    }
+    h3 {
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 20px;
+        color: #555;
+    }
+    canvas {
+        width: 100% !important;
+        height: 300px !important;
+    }
+    @media(max-width: 700px){
+        .charts-wrapper {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+</head>
+<body>
+
+<h1>YA Series Dashboard</h1>
+<input type="text" id="searchBar" placeholder="Search series, book titles, or use 'rating > 4' / 'pages < 1000'">
+
+<div class="charts-wrapper">
+    <div class="chart-container">
+        <h3>Average Rating per Series</h3>
+        <canvas id="avgRatingChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <h3>Total Pages per Series</h3>
+        <canvas id="totalPagesChart"></canvas>
+    </div>
+</div>
+
+<script>
+const seriesData = [
+    {series:"harry_potter", averageRating:4.53, totalPages:3808, books:[
+        {title:"philosophers_stone"}, {title:"chamber_of_secrets"}, {title:"prisoner_of_azkaban"},
+        {title:"goblet_of_fire"}, {title:"order_of_the_phoenix"}, {title:"half_blood_prince"}, {title:"deathly_hallows"}
+    ]},
+    {series:"hunger_games", averageRating:4.2, totalPages:1155, books:[
+        {title:"hunger_games"}, {title:"catching_fire"}, {title:"mockingjay"}
+    ]},
+    {series:"to_all_the_boys", averageRating:4.13, totalPages:1016, books:[
+        {title:"to_all_the_boys_ive_loved_before"}, {title:"ps_i_still_love_you"}, {title:"always_and_forever_lara_jean"}
+    ]},
+    {series:"summer_i_turned_pretty", averageRating:3.97, totalPages:825, books:[
+        {title:"the_summer_i_turned_pretty"}, {title:"its_not_summer_without_you"}, {title:"well_always_have_summer"}
+    ]}
+];
+
+let avgChart, pagesChart;
+
+function initCharts() {
+    const labels = seriesData.map(s=>s.series.replace(/_/g,' '));
+    avgChart = new Chart(document.getElementById('avgRatingChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Average Rating',
+                data: seriesData.map(s=>s.averageRating),
+                backgroundColor: ['#ff6b6b','#4ecdc4','#556270','#c7f464']
+            }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:5 } }, plugins:{ legend:{ display:false } } }
+    });
+
+    pagesChart = new Chart(document.getElementById('totalPagesChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Pages',
+                data: seriesData.map(s=>s.totalPages),
+                backgroundColor: ['#ffb400','#6a0572','#009ffd','#ff6b81']
+            }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false } } }
+    });
+}
+
+function filterCharts(query) {
+    query = query.toLowerCase().trim();
+    const matches = seriesData.map(s=>{
+        let match = false;
+
+        // Series or book title match
+        if(s.series.includes(query) || s.books.some(b=>b.title.includes(query))) match = true;
+
+        // Rating filter
+        const ratingQuery = query.match(/rating\s*([<>]=?)\s*(\d+(\.\d+)?)/);
+        if(ratingQuery){
+            const op = ratingQuery[1], val = parseFloat(ratingQuery[2]);
+            if(op==='>' && s.averageRating>val) match = true;
+            if(op==='>=' && s.averageRating>=val) match = true;
+            if(op==='<' && s.averageRating<val) match = true;
+            if(op==='<=' && s.averageRating<=val) match = true;
+        }
+
+        // Pages filter
+        const pagesQuery = query.match(/pages\s*([<>]=?)\s*(\d+)/);
+        if(pagesQuery){
+            const op = pagesQuery[1], val = parseInt(pagesQuery[2]);
+            if(op==='>' && s.totalPages>val) match = true;
+            if(op==='>=' && s.totalPages>=val) match = true;
+            if(op==='<' && s.totalPages<val) match = true;
+            if(op==='<=' && s.totalPages<=val) match = true;
+        }
+
+        return match;
+    });
+
+    avgChart.data.datasets[0].backgroundColor = matches.map(m=>m?'#ff6b6b':'#ccc');
+    pagesChart.data.datasets[0].backgroundColor = matches.map(m=>m?'#ffb400':'#ccc');
+    avgChart.update();
+    pagesChart.update();
+}
+
+document.getElementById('searchBar').addEventListener('input', e=>{
+    const q = e.target.value;
+    if(!q) initCharts();
+    else filterCharts(q);
+});
+
+initCharts();
+</script>
+
+</body>
+</html>
+
