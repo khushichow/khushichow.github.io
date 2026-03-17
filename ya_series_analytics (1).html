@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YA Book Dashboard — Khushi Chowdhury</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+:root {
+  --bg:         #f9f7f4;
+  --ink:        #1e1c1a;
+  --muted:      #7a7168;
+  --sage:       #7a9e7e;
+  --sage-light: #c8deca;
+  --sage-pale:  #eaf2eb;
+  --pink:       #e0788a;
+  --pink-light: #f2b8c2;
+  --pink-pale:  #fce8ec;
+  --border:     #e4ddd6;
+  --serif:      'Instrument Serif', serif;
+  --sans:       'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #b8b0a833 1px, transparent 1px);
+  background-size: 30px 30px; pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 52px;
+  background: rgba(249,247,244,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--serif); font-size: 1.1rem; font-style: italic; color: var(--ink); text-decoration: none; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; padding: 7px 16px;
+  border-radius: 100px; border: 1px solid var(--border);
+  transition: border-color .2s, color .2s;
+}
+.back-link:hover { border-color: var(--pink); color: var(--pink); }
+
+/* HERO */
+.hero {
+  position: relative; z-index: 1;
+  max-width: 1000px; margin: 0 auto; padding: 60px 32px 32px;
+}
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 16px;
+}
+.eyebrow::before { content:''; width:24px; height:2px; background:var(--pink); border-radius:2px; }
+h1 {
+  font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.05; letter-spacing: -.02em; color: var(--ink); margin-bottom: 14px;
+}
+h1 em { font-style: italic; color: var(--sage); }
+.hero-desc { font-size: .98rem; color: var(--muted); line-height: 1.8; max-width: 580px; margin-bottom: 32px; }
+
+/* SEARCH */
+.search-wrap {
+  position: relative; max-width: 560px; margin-bottom: 40px;
+}
+.search-wrap i {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: .9rem; pointer-events: none;
+}
+#searchInput {
+  width: 100%; padding: 14px 18px 14px 44px;
+  font-family: var(--sans); font-size: .9rem; font-weight: 500;
+  background: #fff; border: 1.5px solid var(--border); border-radius: 100px;
+  color: var(--ink); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+#searchInput:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(122,158,126,.12); }
+#searchInput::placeholder { color: var(--muted); }
+
+.search-examples {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+.example-chip {
+  font-size: .72rem; font-weight: 600; padding: 5px 14px;
+  background: #fff; border: 1px solid var(--border); border-radius: 100px;
+  color: var(--muted); cursor: pointer; transition: all .18s;
+}
+.example-chip:hover { background: var(--sage-pale); color: var(--sage); border-color: var(--sage-light); }
+
+/* PRESET SERIES BUTTONS */
+.series-pills {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+}
+.series-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: .76rem; font-weight: 600; padding: 8px 18px;
+  background: #fff; border: 1.5px solid var(--border); border-radius: 100px;
+  color: var(--ink); cursor: pointer; transition: all .18s;
+}
+.series-pill:hover { border-color: var(--sage); color: var(--sage); transform: translateY(-2px); }
+.series-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.series-pill .pill-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* MAIN CONTENT */
+.main {
+  position: relative; z-index: 1;
+  max-width: 1000px; margin: 0 auto; padding: 0 32px 80px;
+}
+
+/* LOADING / ERROR / EMPTY */
+.state-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px;
+  padding: 56px 40px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.state-card .state-icon { font-size: 2.8rem; }
+.state-card h3 { font-family: var(--serif); font-size: 1.5rem; font-style: italic; color: var(--ink); }
+.state-card p { font-size: .9rem; color: var(--muted); line-height: 1.7; max-width: 380px; }
+.spinner {
+  width: 42px; height: 42px; border: 3px solid var(--border);
+  border-top-color: var(--sage); border-radius: 50%;
+  animation: spin .75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* SERIES OVERVIEW CARD */
+.series-header {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px;
+  padding: 32px; margin-bottom: 22px;
+  display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap;
+}
+.series-cover {
+  width: 80px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px;
+}
+.cover-thumb {
+  width: 100%; aspect-ratio: 2/3; object-fit: cover;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--sage-pale);
+}
+.cover-placeholder {
+  width: 100%; aspect-ratio: 2/3; border-radius: 10px;
+  background: linear-gradient(145deg, var(--pink-pale), var(--sage-pale));
+  border: 1px solid var(--border); display: grid; place-items: center; font-size: 1.4rem;
+}
+.series-meta { flex: 1; min-width: 0; }
+.series-meta h2 { font-family: var(--serif); font-size: 1.8rem; font-style: italic; color: var(--ink); margin-bottom: 10px; }
+.series-meta p { font-size: .9rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+.series-stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.stat-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .76rem; font-weight: 600; padding: 6px 14px;
+  border-radius: 100px; border: 1px solid var(--border); background: var(--bg);
+}
+.stat-badge i { color: var(--sage); font-size: .7rem; }
+
+/* BOOK GRID */
+.book-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px; margin-bottom: 22px;
+}
+.book-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 18px;
+  padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  transition: transform .2s, box-shadow .2s;
+}
+.book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+.book-cover {
+  width: 100%; aspect-ratio: 2/3; object-fit: cover;
+  border-radius: 10px; background: var(--sage-pale); border: 1px solid var(--border);
+}
+.book-cover-placeholder {
+  width: 100%; aspect-ratio: 2/3; border-radius: 10px;
+  background: linear-gradient(145deg, var(--pink-pale), var(--sage-pale));
+  border: 1px solid var(--border); display: grid; place-items: center; font-size: 1.6rem;
+}
+.book-title { font-weight: 700; font-size: .82rem; color: var(--ink); line-height: 1.35; }
+.book-author { font-size: .74rem; color: var(--muted); }
+.book-rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: .72rem; font-weight: 600; color: var(--ink);
+}
+.book-rating i { color: #f5a623; font-size: .65rem; }
+.book-pages { font-size: .7rem; color: var(--muted); }
+
+/* CHARTS */
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 22px;
+}
+.viz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 28px 24px;
+}
+.viz-card h3 { font-family: var(--serif); font-size: 1.25rem; font-style: italic; color: var(--ink); margin-bottom: 6px; }
+.viz-sub { font-size: .82rem; color: var(--muted); margin-bottom: 22px; }
+.viz-card canvas { width: 100% !important; }
+
+/* COMPARE TABLE */
+.compare-table { width: 100%; border-collapse: collapse; }
+.compare-table th {
+  font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); padding: 10px 14px; text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.compare-table td { padding: 12px 14px; font-size: .88rem; color: var(--ink); border-bottom: 1px solid var(--border); }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:hover td { background: var(--bg); }
+.rating-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.rating-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--sage), var(--pink)); }
+
+/* FOOTER */
+footer {
+  position: relative; z-index: 1; border-top: 1px solid var(--border);
+  background: var(--ink); padding: 36px 52px 28px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+}
+.footer-name { font-family: var(--serif); font-size: 1.15rem; font-style: italic; color: #fff; }
+.footer-copy { font-size: .72rem; color: rgba(255,255,255,.22); }
+.footer-link { color: rgba(255,255,255,.45); text-decoration: none; font-size: .74rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.footer-link:hover { color: var(--sage); }
+
+@media (max-width: 700px) {
+  nav { padding: 14px 20px; }
+  .hero, .main { padding-left: 20px; padding-right: 20px; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .book-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
+  footer { padding: 32px 20px 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Khushi Chowdhury</a>
+  <a href="index.html#projects" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Data & API</div>
+  <h1>YA Book<br><em>Dashboard</em></h1>
+  <p class="hero-desc">Search any young adult series to explore its books, ratings, page counts, and more — powered by the Open Library API with real, live data.</p>
+
+  <div class="search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="searchInput" placeholder="Search a series, e.g. Divergent…" autocomplete="off">
+  </div>
+  <div class="search-examples">
+    <span class="example-chip" onclick="search('Harry Potter')">Harry Potter</span>
+    <span class="example-chip" onclick="search('Hunger Games')">Hunger Games</span>
+    <span class="example-chip" onclick="search('Divergent')">Divergent</span>
+    <span class="example-chip" onclick="search('The Maze Runner')">Maze Runner</span>
+    <span class="example-chip" onclick="search('Percy Jackson')">Percy Jackson</span>
+    <span class="example-chip" onclick="search('Twilight')">Twilight</span>
+    <span class="example-chip" onclick="search('An Ember in the Ashes')">An Ember in the Ashes</span>
+    <span class="example-chip" onclick="search('Six of Crows')">Six of Crows</span>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <!-- default empty state -->
+  <div class="state-card" id="emptyState">
+    <div class="state-icon">📚</div>
+    <h3>Search a series above</h3>
+    <p>Type a book series name and hit Enter (or click one of the chips) to see its full breakdown.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-name">Khushi Chowdhury</div>
+  <a href="index.html" class="footer-link">← Portfolio</a>
+  <p class="footer-copy">Data via Open Library · © 2025 Khushi Chowdhury</p>
+</footer>
+
+<script>
+// ── CHART INSTANCES ───────────────────────────────────
+let ratingChart, pagesChart, radarChart;
+function destroyCharts() {
+  [ratingChart, pagesChart, radarChart].forEach(c => c && c.destroy());
+}
+
+// ── OPEN LIBRARY API ──────────────────────────────────
+const OL     = 'https://openlibrary.org';
+const COVERS = 'https://covers.openlibrary.org/b';
+
+function coverUrl(id, size='M') {
+  return id ? `${COVERS}/id/${id}-${size}.jpg` : null;
+}
+
+// Step 1: search for works by title, get back clean work keys
+async function searchWorks(query) {
+  const url = `${OL}/search.json?q=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,number_of_pages_median,ratings_average,ratings_count,cover_i,edition_count&limit=40`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Search failed');
+  const data = await r.json();
+  return data.docs || [];
+}
+
+// Step 2: for a given work key, fetch full work details (description, subjects, covers)
+async function fetchWork(key) {
+  try {
+    const r = await fetch(`${OL}${key}.json`);
+    if (!r.ok) return null;
+    return r.json();
+  } catch { return null; }
+}
+
+// Smart series filter: keep books that are likely part of the same series
+function filterToSeries(docs, query) {
+  const q = query.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const words = q.split(' ').filter(w => w.length > 2);
+
+  // Score each doc by how many query words appear in title
+  const scored = docs.map(d => {
+    const title = (d.title || '').toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    const score = words.filter(w => title.includes(w)).length;
+    return { ...d, _score: score };
+  });
+
+  // Keep docs that match at least half the query words, or exact title match
+  let filtered = scored.filter(d => d._score >= Math.max(1, Math.floor(words.length * 0.5)));
+
+  // Also include docs where full query string is a substring of title
+  const exactMatches = scored.filter(d => {
+    const title = (d.title || '').toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    return title.includes(q);
+  });
+
+  const combined = [...new Map([...exactMatches, ...filtered].map(d => [d.key, d])).values()];
+
+  // If we got too few, relax: just require 1 word match
+  if (combined.length < 2) {
+    return scored.filter(d => d._score >= 1).slice(0, 15);
+  }
+
+  return combined.slice(0, 15);
+}
+
+// ── SEARCH UI ─────────────────────────────────────────
+function search(query) {
+  document.getElementById('searchInput').value = query;
+  runSearch(query);
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runSearch(e.target.value.trim());
+});
+
+let debounceTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(debounceTimer);
+  const q = e.target.value.trim();
+  if (q.length > 2) debounceTimer = setTimeout(() => runSearch(q), 700);
+  else if (!q) showEmpty();
+});
+
+function showEmpty() {
+  document.getElementById('main').innerHTML = `
+    <div class="state-card">
+      <div class="state-icon">📚</div>
+      <h3>Search a series above</h3>
+      <p>Type any YA book series and hit Enter — or click a chip below to explore a popular one.</p>
+    </div>`;
+}
+
+function showLoading(query) {
+  document.getElementById('main').innerHTML = `
+    <div class="state-card">
+      <div class="spinner"></div>
+      <h3>Searching Open Library…</h3>
+      <p>Looking up "<strong>${query}</strong>"</p>
+    </div>`;
+}
+
+function showError(msg) {
+  document.getElementById('main').innerHTML = `
+    <div class="state-card">
+      <div class="state-icon">😕</div>
+      <h3>Nothing found</h3>
+      <p>${msg}</p>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Try a different spelling, or click one of the example chips.</p>
+    </div>`;
+}
+
+async function runSearch(query) {
+  if (!query) return;
+  destroyCharts();
+  showLoading(query);
+
+  try {
+    const docs = await searchWorks(query);
+    if (!docs.length) { showError(`No results for "${query}".`); return; }
+
+    // Filter to likely series books
+    let books = filterToSeries(docs, query);
+
+    // Must have at least a title and ideally a rating
+    books = books.filter(b => b.title);
+
+    // Sort by publication year (series order)
+    books.sort((a, b) => (a.first_publish_year || 9999) - (b.first_publish_year || 9999));
+
+    // De-dupe by normalised title (remove subtitle variations)
+    const seen = new Set();
+    books = books.filter(b => {
+      const key = b.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 30);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    if (!books.length) { showError(`Couldn't find clear series results for "${query}".`); return; }
+
+    renderDashboard(query, books);
+  } catch(e) {
+    console.error(e);
+    showError('Could not reach Open Library. Check your connection and try again.');
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────
+function renderDashboard(query, books) {
+  const withRatings = books.filter(b => b.ratings_average > 0);
+  const withPages   = books.filter(b => b.number_of_pages_median > 0);
+
+  const avgRating = withRatings.length
+    ? (withRatings.reduce((s, b) => s + b.ratings_average, 0) / withRatings.length).toFixed(2)
+    : 'N/A';
+  const totalPages = withPages.reduce((s, b) => s + (b.number_of_pages_median || 0), 0);
+  const totalRatings = books.reduce((s, b) => s + (b.ratings_count || 0), 0);
+  const authors = [...new Set(books.flatMap(b => b.author_name || []))].slice(0, 2).join(' & ');
+  const firstCover = books.find(b => b.cover_i)?.cover_i;
+
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="series-header">
+      <div class="series-cover">
+        ${firstCover
+          ? `<img class="cover-thumb" src="${coverUrl(firstCover, 'M')}" alt="cover" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'cover-placeholder',innerHTML:'📖'}))">`
+          : `<div class="cover-placeholder">📖</div>`}
+      </div>
+      <div class="series-meta">
+        <h2>${query}</h2>
+        ${authors ? `<p>By ${authors}</p>` : ''}
+        <div class="series-stats">
+          <span class="stat-badge"><i class="fa-solid fa-star"></i> ${avgRating} avg rating</span>
+          <span class="stat-badge"><i class="fa-solid fa-book"></i> ${books.length} book${books.length!==1?'s':''}</span>
+          ${totalPages ? `<span class="stat-badge"><i class="fa-solid fa-file-lines"></i> ${totalPages.toLocaleString()} total pages</span>` : ''}
+          ${totalRatings ? `<span class="stat-badge"><i class="fa-solid fa-users"></i> ${totalRatings.toLocaleString()} ratings</span>` : ''}
+          <span class="stat-badge"><i class="fa-solid fa-database"></i> Open Library</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="book-grid" id="bookGrid"></div>
+
+    <div class="charts-grid">
+      <div class="viz-card">
+        <h3>Ratings per Book</h3>
+        <p class="viz-sub">Average reader rating out of 5 for each title.</p>
+        <canvas id="ratingChart" height="260"></canvas>
+      </div>
+      <div class="viz-card">
+        <h3>Page Count per Book</h3>
+        <p class="viz-sub">Median page count — how long each book is.</p>
+        <canvas id="pagesChart" height="260"></canvas>
+      </div>
+    </div>
+
+    <div class="viz-card" style="margin-bottom:22px">
+      <h3>Series at a Glance</h3>
+      <p class="viz-sub">A normalised fingerprint — rating strength, length, popularity, and more.</p>
+      <canvas id="radarChart" height="300"></canvas>
+    </div>
+
+    <div class="viz-card">
+      <h3>Book Comparison Table</h3>
+      <p class="viz-sub">Every book side by side.</p>
+      <table class="compare-table" id="compareTable"></table>
+    </div>
+  `;
+
+  // ── BOOK GRID ──
+  const grid = document.getElementById('bookGrid');
+  books.slice(0, 12).forEach(b => {
+    const img = b.cover_i ? coverUrl(b.cover_i, 'M') : null;
+    grid.innerHTML += `
+      <div class="book-card">
+        ${img
+          ? `<img class="book-cover" src="${img}" alt="${b.title}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'book-cover-placeholder',innerHTML:'📖'}))">`
+          : `<div class="book-cover-placeholder">📖</div>`}
+        <div class="book-title">${b.title}</div>
+        ${b.author_name ? `<div class="book-author">${b.author_name[0]}</div>` : ''}
+        ${b.first_publish_year ? `<div class="book-pages">${b.first_publish_year}</div>` : ''}
+        ${b.ratings_average ? `<div class="book-rating"><i class="fa-solid fa-star"></i> ${b.ratings_average.toFixed(2)}</div>` : ''}
+        ${b.number_of_pages_median ? `<div class="book-pages">${b.number_of_pages_median} pages</div>` : ''}
+      </div>`;
+  });
+
+  // ── PALETTE ──
+  const palette = books.map((_, i) => {
+    const t = i / Math.max(books.length - 1, 1);
+    return `rgba(${Math.round(122 + (224-122)*t)},${Math.round(158 + (120-158)*t)},${Math.round(126 + (138-126)*t)},0.85)`;
+  });
+
+  const labels = books.map(b => b.title.length > 22 ? b.title.slice(0, 20) + '…' : b.title);
+  const chartDefaults = {
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor: '#1e1c1a', cornerRadius: 8, padding: 10, titleColor:'#fff', bodyColor:'rgba(255,255,255,.75)' }
+    }
+  };
+
+  // ── RATING CHART ──
+  ratingChart = new Chart(document.getElementById('ratingChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: books.map(b => b.ratings_average ? +b.ratings_average.toFixed(2) : null),
+        backgroundColor: palette, borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      ...chartDefaults,
+      plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => `Rating: ${ctx.parsed.y} / 5` } } },
+      scales: {
+        x: { ticks: { color:'#7a7168', font:{family:"'Syne'",size:10}, maxRotation:40 }, grid: { display:false } },
+        y: { min:0, max:5, ticks: { color:'#7a7168', font:{family:"'Syne'"} }, grid: { color:'rgba(0,0,0,.05)' } }
+      }
+    }
+  });
+
+  // ── PAGES CHART ──
+  pagesChart = new Chart(document.getElementById('pagesChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: books.map(b => b.number_of_pages_median || null),
+        backgroundColor: palette.slice().reverse(), borderRadius: 6, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      ...chartDefaults,
+      plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => `${ctx.parsed.y} pages` } } },
+      scales: {
+        x: { ticks: { color:'#7a7168', font:{family:"'Syne'",size:10}, maxRotation:40 }, grid: { display:false } },
+        y: { ticks: { color:'#7a7168', font:{family:"'Syne'"} }, grid: { color:'rgba(0,0,0,.05)' } }
+      }
+    }
+  });
+
+  // ── RADAR ──
+  const avgPages = withPages.length ? totalPages / withPages.length : 0;
+  const popScore = Math.min(100, totalRatings / 1000);
+  const coverScore = books.filter(b => b.cover_i).length / books.length * 100;
+
+  radarChart = new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Rating', 'Avg Length', 'Book Count', 'Popularity', 'Cover Art', 'Recent'],
+      datasets: [{
+        label: query,
+        data: [
+          avgRating !== 'N/A' ? +avgRating * 20 : 0,
+          Math.min(100, avgPages / 8),
+          Math.min(100, books.length * 10),
+          Math.min(100, popScore),
+          coverScore,
+          books.some(b => b.first_publish_year > 2010) ? 80 : 35,
+        ],
+        borderColor: '#7a9e7e', backgroundColor: 'rgba(122,158,126,.15)',
+        borderWidth: 2.5, pointBackgroundColor: '#7a9e7e', pointRadius: 5, pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend:{ display:false }, tooltip:{ backgroundColor:'#1e1c1a', cornerRadius:8, padding:10 } },
+      scales: {
+        r: {
+          min:0, max:100, ticks:{ display:false },
+          grid:{ color:'rgba(0,0,0,.06)' },
+          pointLabels:{ color:'#7a7168', font:{family:"'Syne'",size:11,weight:'600'} },
+          angleLines:{ color:'rgba(0,0,0,.06)' },
+        }
+      }
+    }
+  });
+
+  // ── TABLE ──
+  document.getElementById('compareTable').innerHTML = `
+    <thead><tr>
+      <th>#</th><th>Title</th><th>Author</th><th>Year</th><th>Pages</th><th>Rating</th><th>Ratings Count</th>
+    </tr></thead>
+    <tbody>
+      ${books.map((b, i) => `
+        <tr>
+          <td style="color:var(--muted);font-size:.8rem">${i + 1}</td>
+          <td><strong>${b.title}</strong></td>
+          <td>${(b.author_name || ['—'])[0]}</td>
+          <td>${b.first_publish_year || '—'}</td>
+          <td>${b.number_of_pages_median || '—'}</td>
+          <td>
+            ${b.ratings_average ? `
+              ${b.ratings_average.toFixed(2)}
+              <div class="rating-bar"><div class="rating-fill" style="width:${b.ratings_average / 5 * 100}%"></div></div>
+            ` : '—'}
+          </td>
+          <td>${b.ratings_count ? b.ratings_count.toLocaleString() : '—'}</td>
+        </tr>`).join('')}
+    </tbody>`;
+}
+</script>
+
+</body>
+</html>
