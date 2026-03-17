@@ -4,296 +4,628 @@
 <meta charset="UTF-8">
 <title>Khushi Chowdhury</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    body {
-        margin: 0;
-        font-family: "Poppins", sans-serif;
-        background: #fff0f5;
-        color: #222;
-    }
+:root {
+  --bg:          #f9f7f4;
+  --bg2:         #f2ede8;
+  --ink:         #1e1c1a;
+  --muted:       #7a7168;
+  --sage:        #7a9e7e;
+  --sage-light:  #c8deca;
+  --sage-pale:   #eaf2eb;
+  --pink:        #e0788a;
+  --pink-light:  #f2b8c2;
+  --pink-pale:   #fce8ec;
+  --border:      #e4ddd6;
+  --serif:       'Instrument Serif', serif;
+  --sans:        'Syne', sans-serif;
+}
 
-    /* HEADER */
-    #headerSection {
-        text-align: center;
-        background: linear-gradient(135deg, #CC8899, #B57281);
-        color: #fff;
-        position: relative;
-        min-height: 300px;
-        overflow: hidden;
-    }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-    .header-content {
-        padding: 80px 20px;
-    }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+}
 
-    .image-wrapper {
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin: 0 auto 20px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-        cursor: pointer;
-    }
+/* subtle dot texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #b8b0a833 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .5;
+}
 
-    #profile-pic {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 52px;
+  background: rgba(249,247,244,.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--serif); font-size: 1.2rem; font-style: italic;
+  color: var(--ink); text-decoration: none; letter-spacing: .01em;
+}
+.nav-links { display: flex; gap: 6px; list-style: none; align-items: center; }
+.nav-links a {
+  font-size: .76rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; padding: 7px 15px;
+  border-radius: 100px; transition: background .2s, color .2s;
+}
+.nav-links a:hover { background: var(--sage-pale); color: var(--sage); }
+.nav-cta {
+  background: var(--ink) !important; color: #fff !important;
+  padding: 8px 20px !important; border-radius: 100px;
+}
+.nav-cta:hover { background: var(--pink) !important; color: #fff !important; }
 
-    #quitBtn {
-        display: none;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        padding: 8px 14px;
-        font-size: 16px;
-        background-color: #ff6b81;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        z-index: 10;
-    }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: .3s; }
 
-    /* ABOUT */
-    #about {
-        max-width: 700px;
-        margin: 60px auto;
-        padding: 0 20px;
-        text-align: center;
-    }
+/* ── HERO ── */
+#hero {
+  position: relative; z-index: 1;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  align-items: center;
+  gap: 60px;
+  padding: 120px 52px 80px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
 
-    #projects {
-        max-width: 1100px;
-        margin: 60px auto;
-        padding: 0 20px;
-text-align: center;
-    }
+.hero-left { display: flex; flex-direction: column; gap: 26px; }
 
-    /* PROJECTS GRID */
-    .project-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-        gap: 25px;
-    }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+  background: var(--sage-pale); color: var(--sage);
+  font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  padding: 7px 16px; border-radius: 100px;
+  border: 1px solid var(--sage-light);
+}
+.hero-tag::before {
+  content: ''; width: 6px; height: 6px; background: var(--sage);
+  border-radius: 50%; animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
 
-    .project-card {
-        background: #ffe6f0;
-        padding: 25px;
-        border-radius: 14px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(3rem, 5.5vw, 5.4rem);
+  line-height: 1.02; letter-spacing: -.02em; color: var(--ink);
+}
+h1 em { font-style: italic; color: var(--sage); }
 
-    .project-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 6px 25px rgba(0,0,0,0.12);
-    }
+.hero-bio {
+  font-size: 1.02rem; color: var(--muted); line-height: 1.82;
+  max-width: 460px; font-weight: 400;
+}
 
-    .project-card h3 a {
-        color: #B57281;
-        text-decoration: none;
-    }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
-    .project-card h3 a:hover {
-        text-decoration: underline;
-    }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; font-family: var(--sans);
+  font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  text-decoration: none; border-radius: 100px;
+  transition: transform .18s, box-shadow .18s, background .18s, color .18s;
+  cursor: pointer; border: none;
+}
+.btn-dark { background: var(--ink); color: #fff; box-shadow: 0 4px 18px rgba(30,28,26,.18); }
+.btn-dark:hover { background: var(--sage); transform: translateY(-2px); box-shadow: 0 8px 26px rgba(122,158,126,.3); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: var(--sage); color: var(--sage); transform: translateY(-2px); }
 
-    /* FOOTER */
-    footer {
-        text-align: center;
-        padding: 40px 0 25px;
-        margin-top: 60px;
-        font-size: 14px;
-        color: #777;
-    }
+/* hero photo */
+.hero-right { position: relative; display: flex; justify-content: center; align-items: center; }
+.photo-frame { position: relative; width: 360px; height: 440px; }
 
-    .social-icons a {
-        margin: 0 12px;
-        font-size: 28px;
-        color: #B57281;
-        text-decoration: none;
-        transition: 0.2s;
-    }
+.photo-blob {
+  position: absolute; inset: 0;
+  background: linear-gradient(145deg, var(--pink-pale) 0%, var(--sage-pale) 100%);
+  border-radius: 40% 60% 58% 42% / 46% 42% 58% 54%;
+  transform: rotate(-4deg);
+}
+.photo-blob-2 {
+  position: absolute; inset: 14px;
+  border: 1.5px solid rgba(122,158,126,.25);
+  border-radius: 40% 60% 58% 42% / 46% 42% 58% 54%;
+  transform: rotate(3deg);
+}
+.photo-img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  border-radius: 40% 60% 58% 42% / 46% 42% 58% 54%;
+  cursor: pointer; transition: transform .4s ease; z-index: 1;
+}
+.photo-img:hover { transform: scale(1.03) rotate(1deg); }
 
-    .social-icons a:hover {
-        opacity: 0.6;
-    }
+.photo-hint {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff;
+  font-size: .67rem; font-weight: 600; padding: 5px 14px; border-radius: 100px;
+  white-space: nowrap; z-index: 3; opacity: 0; transition: opacity .25s;
+}
+.photo-frame:hover .photo-hint { opacity: 1; }
+
+.hero-chip {
+  position: absolute; background: #fff; border: 1px solid var(--border);
+  border-radius: 100px; padding: 8px 15px;
+  font-size: .74rem; font-weight: 600; color: var(--ink);
+  box-shadow: 0 4px 18px rgba(0,0,0,.07); white-space: nowrap; z-index: 2;
+  animation: chipFloat 5s ease-in-out infinite;
+}
+.hero-chip.c1 { top: 8%;  right: -18px; animation-delay: 0s; }
+.hero-chip.c2 { bottom: 24%; right: -28px; animation-delay: 1.3s; }
+.hero-chip.c3 { bottom: 8%; left: -14px; animation-delay: 2.6s; }
+@keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+
+/* scroll cue */
+.scroll-cue {
+  position: absolute; bottom: 44px; left: 52px; z-index: 1;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--muted); font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+}
+.scroll-line { width: 38px; height: 1px; background: var(--border); position: relative; overflow: hidden; }
+.scroll-line::after {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%; background: var(--pink);
+  animation: scan 2.2s ease-in-out infinite;
+}
+@keyframes scan { 0%{left:-100%} 100%{left:100%} }
+
+/* ── SECTIONS ── */
+.section {
+  position: relative; z-index: 1;
+  max-width: 1140px; margin: 0 auto; padding: 96px 52px;
+}
+.section-eyebrow {
+  display: flex; align-items: center; gap: 12px;
+  font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 16px;
+}
+.section-eyebrow::before { content:''; width:28px; height:2px; background:var(--pink); border-radius:2px; }
+h2.section-title {
+  font-family: var(--serif); font-size: clamp(2rem, 3.8vw, 3.2rem);
+  line-height: 1.1; letter-spacing: -.02em; color: var(--ink); margin-bottom: 52px;
+}
+
+/* ── ABOUT ── */
+#about { border-top: 1px solid var(--border); }
+.about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+
+.about-body p { font-size: 1rem; color: var(--muted); line-height: 1.85; margin-bottom: 16px; }
+.about-body p strong { color: var(--ink); font-weight: 600; }
+.about-body p em { color: var(--sage); font-style: italic; }
+
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.tag {
+  background: var(--bg2); color: var(--ink);
+  font-size: .76rem; font-weight: 600; padding: 7px 17px;
+  border-radius: 100px; border: 1px solid var(--border);
+  transition: background .2s, color .2s, border-color .2s, transform .15s;
+  cursor: default;
+}
+.tag:hover { background: var(--pink-pale); color: var(--pink); border-color: var(--pink-light); transform: translateY(-2px); }
+
+.about-right { display: flex; flex-direction: column; gap: 18px; }
+.about-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 26px 24px;
+  transition: transform .22s, box-shadow .22s;
+}
+.about-card:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,.07); }
+.about-card-icon {
+  width: 42px; height: 42px; border-radius: 13px;
+  display: grid; place-items: center; font-size: 1.15rem; margin-bottom: 14px;
+}
+.icon-sage { background: var(--sage-pale); }
+.icon-pink { background: var(--pink-pale); }
+.about-card h3 { font-family: var(--serif); font-size: 1.2rem; font-style: italic; color: var(--ink); margin-bottom: 7px; }
+.about-card p { font-size: .87rem; color: var(--muted); line-height: 1.7; }
+
+/* ── PROJECTS ── */
+#projects { border-top: 1px solid var(--border); }
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.project-card {
+  position: relative; background: #fff; border: 1px solid var(--border);
+  border-radius: 22px; padding: 32px 24px 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  text-decoration: none; color: inherit; overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+/* alternating top accent colors */
+.project-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; transition: opacity .25s;
+}
+.accent-sage::before  { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+.accent-pink::before  { background: linear-gradient(90deg, var(--pink), var(--pink-light)); }
+.accent-both::before  { background: linear-gradient(90deg, var(--sage), var(--pink)); }
+
+.project-card:hover { transform: translateY(-7px); box-shadow: 0 22px 52px rgba(0,0,0,.09); }
+
+.project-index {
+  font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+  color: var(--border); transition: color .2s;
+}
+.project-card:hover .project-index { color: var(--pink); }
+
+.project-label {
+  display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; padding: 5px 13px; border-radius: 100px; width: fit-content;
+}
+.label-sage { color: var(--sage);  background: var(--sage-pale);  border: 1px solid var(--sage-light); }
+.label-pink { color: #b06070;      background: var(--pink-pale);  border: 1px solid var(--pink-light); }
+
+.project-card h3 { font-family: var(--serif); font-size: 1.38rem; font-style: italic; color: var(--ink); line-height: 1.2; }
+.project-card p { font-size: .88rem; color: var(--muted); line-height: 1.7; flex: 1; }
+
+.project-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .76rem; font-weight: 700; color: var(--pink); margin-top: 4px;
+  transition: gap .2s;
+}
+.project-card:hover .project-link { gap: 10px; }
+
+/* ── SNAKE OVERLAY ── */
+#snakeOverlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(20,18,16,.93); z-index: 500;
+  flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  backdrop-filter: blur(8px);
+}
+#snakeOverlay.active { display: flex; }
+.snake-header { font-family: var(--serif); font-size: 2rem; font-style: italic; color: #fff; }
+#snakeCanvas { border-radius: 16px; border: 1.5px solid rgba(200,222,202,.25); box-shadow: 0 0 60px rgba(122,158,126,.15); }
+.snake-sub { font-size: .76rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.38); text-align: center; }
+
+/* ── FOOTER ── */
+footer {
+  position: relative; z-index: 1; border-top: 1px solid var(--border);
+  background: var(--ink);
+  padding: 60px 52px 36px;
+  display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center;
+}
+.footer-name { font-family: var(--serif); font-size: 2rem; font-style: italic; color: #fff; }
+.footer-tagline { font-size: .8rem; color: rgba(255,255,255,.38); font-weight: 500; letter-spacing: .08em; }
+.social-row { display: flex; gap: 10px; }
+.social-btn {
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.55); font-size: .95rem; text-decoration: none;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+.social-btn:hover { border-color: var(--pink); color: var(--pink); transform: translateY(-3px); }
+.footer-copy { font-size: .73rem; color: rgba(255,255,255,.22); letter-spacing: .05em; }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(2){transition-delay:.08s}
+.reveal:nth-child(3){transition-delay:.16s}
+.reveal:nth-child(4){transition-delay:.24s}
+.reveal:nth-child(5){transition-delay:.32s}
+.reveal:nth-child(6){transition-delay:.40s}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  nav { padding: 16px 24px; }
+  .nav-links {
+    display: none; flex-direction: column; position: fixed;
+    top: 57px; left: 0; right: 0; background: var(--bg);
+    border-bottom: 1px solid var(--border); padding: 16px 24px; gap: 4px;
+  }
+  .nav-links.open { display: flex; }
+  .hamburger { display: flex; }
+  #hero { grid-template-columns: 1fr; padding: 100px 24px 80px; text-align: center; gap: 44px; }
+  .hero-bio { margin: 0 auto; }
+  .hero-actions { justify-content: center; }
+  .hero-tag { margin: 0 auto; }
+  .hero-right { order: -1; }
+  .photo-frame { width: 230px; height: 280px; }
+  .hero-chip, .scroll-cue { display: none; }
+  .about-layout { grid-template-columns: 1fr; gap: 40px; }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 68px 24px; }
+  footer { padding: 44px 24px 30px; }
+}
+@media (max-width: 560px) {
+  h1 { font-size: 2.5rem; }
+  .project-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<header id="headerSection">
-    <div class="header-content" id="headerContent">
-        <div class="image-wrapper">
-            <img src="khushi.jpg" id="profile-pic" alt="Khushi Chowdhury">
-        </div>
-        <h1>Khushi Chowdhury</h1>
-        <p>Computer Science Graduate</p>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Khushi Chowdhury</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="resume.pdf" target="_blank" class="nav-cta">Résumé ↗</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;z-index:1;">
+  <div id="hero">
+    <div class="hero-left reveal">
+      <div class="hero-tag">Available for opportunities</div>
+      <h1>Hi, I'm<br><em>Khushi</em> ✦</h1>
+      <p class="hero-bio">Computer Science graduate passionate about databases and full-stack design — I build things that are as thoughtful as they look.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-dark" onclick="event.preventDefault();document.getElementById('projects').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-arrow-down"></i> See my work</a>
+        <a href="https://linkedin.com/in/khushichowdhury/" target="_blank" class="btn btn-ghost"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+      </div>
     </div>
-    <button id="quitBtn">Quit Game</button>
-</header>
+
+    <div class="hero-right reveal">
+      <div class="photo-frame" id="photoFrame">
+        <div class="photo-blob"></div>
+        <div class="photo-blob-2"></div>
+        <div class="photo-hint">✦ Click to play snake</div>
+        <img src="khushi.jpg" alt="Khushi Chowdhury" class="photo-img" id="avatarBtn">
+        <div class="hero-chip c1">🎓 CS Graduate</div>
+        <div class="hero-chip c2">💻 Full-Stack</div>
+        <div class="hero-chip c3">🌿 Builder</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</div>
 
 <!-- ABOUT -->
-<section id="about">
-    <h2>About Me</h2>
-    <p>
-        Hi! I'm Khushi, a new grad computer scientist passionate about databases and full-stack design. 
-        I enjoy building useful tools and being creative with my designs and functionalities.
-    </p>
+<section id="about" class="section">
+  <div class="section-eyebrow">About</div>
+  <h2 class="section-title">A little about<br><em style="font-style:italic;color:var(--pink)">me</em></h2>
+  <div class="about-layout">
+    <div class="about-body reveal">
+      <p>Hey! I'm <strong>Khushi</strong>, a new-grad computer scientist who loves building things — from clean database schemas to interfaces people actually enjoy using.</p>
+      <p>I'm drawn to the intersection of <strong>design and engineering</strong>: where something works beautifully <em>and</em> looks beautiful. When I'm not coding, you'll probably find me deep in a Minecraft world or hunting for good books.</p>
+      <p>I'm actively looking for opportunities where I can grow, contribute, and build cool stuff with a team that cares.</p>
+      <div class="tag-cloud">
+        <span class="tag">Python</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">HTML & CSS</span>
+        <span class="tag">SQL</span>
+        <span class="tag">PHP</span>
+        <span class="tag">Full-Stack</span>
+        <span class="tag">UI Design</span>
+        <span class="tag">Databases</span>
+      </div>
+    </div>
+    <div class="about-right">
+      <div class="about-card reveal">
+        <div class="about-card-icon icon-sage">🎓</div>
+        <h3>Computer Science</h3>
+        <p>New graduate with a strong foundation in algorithms, data structures, databases, and software design.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon icon-pink">🛠️</div>
+        <h3>Full-Stack Builder</h3>
+        <p>Comfortable across the stack — from writing SQL queries to crafting the front-end experience users see.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon icon-sage">✨</div>
+        <h3>Design-Minded</h3>
+        <p>I believe great software should feel good to use. I sweat the details on both the code and the interface.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- PROJECTS -->
-<section id="projects">
-    <h2>Projects</h2>
-    <div class="project-grid">
-        <div class="project-card">
-            <h3><a href="tiktaktoe.html">Tiktoktoe</a></h3>
-            <p>Play some tiktaktoe with your friends! It'll keep track of your score, it resets when you refresh.</p>
-        </div>
-        <div class="project-card">
-            <h3><a href="todo.html">To Do List</a></h3>
-            <p>Heres a to do list that organizes your tasks by priority and saves your progress.</p>
-        </div>
-        <div class="project-card">
-            <h3><a href="ya_series_analytics.html">YA Book Series Dashboard</a></h3>
-            <p>Search up a young adult book series with the, title, ratings and amount of pages.</p>
-        </div>
-    </div>
+<section id="projects" class="section">
+  <div class="section-eyebrow">Work</div>
+  <h2 class="section-title">Things I've<br><em style="font-style:italic;color:var(--pink)">built</em></h2>
+  <div class="project-grid">
+
+    <a href="ya_series_analytics.html" class="project-card accent-sage reveal">
+      <div class="project-index">01 —</div>
+      <span class="project-label label-sage">Data & API</span>
+      <h3>YA Book Dashboard</h3>
+      <p>Search any young adult series to explore ratings, titles, and page counts. A bookish data playground powered by the Open Library API.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="spotify_mood.html" class="project-card accent-pink reveal">
+      <div class="project-index">02 —</div>
+      <span class="project-label label-pink">Data Viz</span>
+      <h3>Spotify Mood Map</h3>
+      <p>An interactive chart that maps popular genres by energy and valence — visualising the emotional landscape of music using the Spotify dataset.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="tiktaktoe.html" class="project-card accent-sage reveal">
+      <div class="project-index">03 —</div>
+      <span class="project-label label-sage">Game</span>
+      <h3>Tic-Tac-Toe</h3>
+      <p>Play with a friend and keep a running score across rounds. Simple, satisfying, endlessly replayable.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="todo.html" class="project-card accent-pink reveal">
+      <div class="project-index">04 —</div>
+      <span class="project-label label-pink">Productivity</span>
+      <h3>To-Do List</h3>
+      <p>A task manager that sorts by priority and remembers your work — because your focus deserves good tools.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="snake.html" class="project-card accent-both reveal">
+      <div class="project-index">05 —</div>
+      <span class="project-label label-sage">Game</span>
+      <h3>Snake</h3>
+      <p>A classic snake game built from scratch with JavaScript canvas — complete with score tracking and increasing difficulty.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <a href="serenity-api-main" class="project-card accent-sage reveal">
+      <div class="project-index">06 —</div>
+      <span class="project-label label-pink">API</span>
+      <h3>Serenity API</h3>
+      <p>A REST API project built to serve calming content — exploring back-end architecture, routing, and data handling.</p>
+      <div class="project-link">Open project <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+  </div>
 </section>
+
+<!-- SNAKE OVERLAY -->
+<div id="snakeOverlay">
+  <div class="snake-header">Snake 🐍</div>
+  <canvas id="snakeCanvas"></canvas>
+  <p class="snake-sub">Arrow keys / WASD to move<br>Eat the Khushi to score</p>
+  <button class="btn btn-dark" id="quitBtn" style="margin-top:4px">Quit Game</button>
+</div>
 
 <!-- FOOTER -->
 <footer>
-    <div class="social-icons">
-        <a href="https://linkedin.com/in/khushichowdhury/" target="_blank"><i class="fa fa-linkedin"></i></a>
-        <a href="https://github.com/khushichow" target="_blank"><i class="fa fa-github"></i></a>
-        <a href="resume.pdf" target="_blank"><i class="fa fa-file"></i></a>
-    </div>
-    © 2025 Khushi Chowdhury
+  <div class="footer-name">Khushi Chowdhury</div>
+  <p class="footer-tagline">CS Graduate · Full-Stack · Available for work</p>
+  <div class="social-row">
+    <a href="https://linkedin.com/in/khushichowdhury/" target="_blank" class="social-btn" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+    <a href="https://github.com/khushichow" target="_blank" class="social-btn" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+    <a href="resume.pdf" target="_blank" class="social-btn" aria-label="Résumé"><i class="fa-solid fa-file"></i></a>
+  </div>
+  <p class="footer-copy">© 2025 Khushi Chowdhury · Made with care</p>
 </footer>
 
 <script>
-// ---------------- PROFILE PICTURE INTERACTION ----------------
-const profilePic = document.getElementById("profile-pic");
-const headerContent = document.getElementById("headerContent");
-const quitBtn = document.getElementById("quitBtn");
-let snakeCanvas;
+/* hamburger */
+const ham = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+ham.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
 
-profilePic.addEventListener("click", () => {
-    headerContent.style.display = "none";
-    quitBtn.style.display = "block";
+/* scroll reveal */
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-    snakeCanvas = document.createElement("canvas");
-    snakeCanvas.id = "snakeCanvas";
-    snakeCanvas.style.border = "5px solid #ffb6c1";
-    snakeCanvas.style.background = "#ffe6f0";
-    snakeCanvas.style.display = "block";
-    snakeCanvas.style.margin = "0 auto 20px auto";
-    headerContent.parentNode.appendChild(snakeCanvas);
+/* snake easter egg */
+const avatarBtn    = document.getElementById('avatarBtn');
+const snakeOverlay = document.getElementById('snakeOverlay');
+const quitBtn      = document.getElementById('quitBtn');
+const snakeCanvas  = document.getElementById('snakeCanvas');
 
-    startSnakeGame(snakeCanvas);
+avatarBtn.addEventListener('click', () => {
+  snakeOverlay.classList.add('active');
+  startSnakeGame(snakeCanvas);
 });
-
-quitBtn.addEventListener("click", () => {
-    if(snakeCanvas) snakeCanvas.remove();
-    headerContent.style.display = "block";
-    quitBtn.style.display = "none";
+quitBtn.addEventListener('click', () => {
+  snakeOverlay.classList.remove('active');
+  snakeRunning = false;
 });
 </script>
 
 <script>
-// ---------------- SIMPLE SNAKE GAME ----------------
+let snakeRunning = false;
+
 function startSnakeGame(canvas) {
-    const COLS = 15, ROWS = 15; 
-    const EMPTY=0,SNAKE=1,FRUIT=2;
-    const LEFT=0,UP=1,RIGHT=2,DOWN=3;
-    const KEY_LEFT=37,KEY_UP=38,KEY_RIGHT=39,KEY_DOWN=40;
+  snakeRunning = true;
+  const COLS = 18, ROWS = 18;
+  const SIZE = Math.min(window.innerWidth - 48, 420);
+  canvas.width = SIZE; canvas.height = SIZE;
+  const bs = SIZE / ROWS;
+  const ctx = canvas.getContext('2d');
 
-    const size = 400;
-    canvas.width = size;
-    canvas.height = size;
-    const blockSize = size/ROWS;
+  let snake = [{x:9,y:13}], dir=0, nextDir=0, score=0;
+  let food = rnd();
+  const img = new Image(); img.src = 'khushi.jpg';
 
-    let ctx = canvas.getContext("2d");
+  function rnd() { return {x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)}; }
 
-    let grid = [];
-    for(let x=0;x<COLS;x++){grid[x]=[];for(let y=0;y<ROWS;y++) grid[x][y]=EMPTY;}
-    let snake = [{x:Math.floor(COLS/2), y:ROWS-1}];
-    let dir = UP, nextDir = UP;
-    let score=0;
-    let foodImg = new Image();
-    foodImg.src = "khushi.jpg";
-    let food = {x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS)};
+  const onKey = e => {
+    const m = {ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3,w:0,d:1,s:2,a:3};
+    if (e.key in m) { e.preventDefault(); const d=m[e.key]; if(Math.abs(d-dir)!==2) nextDir=d; }
+  };
+  document.addEventListener('keydown', onKey);
 
-    document.addEventListener("keydown", e => {
-        if([37,38,39,40].includes(e.keyCode)) e.preventDefault();
-        if(e.keyCode===KEY_LEFT && dir!==RIGHT) nextDir=LEFT;
-        if(e.keyCode===KEY_UP && dir!==DOWN) nextDir=UP;
-        if(e.keyCode===KEY_RIGHT && dir!==LEFT) nextDir=RIGHT;
-        if(e.keyCode===KEY_DOWN && dir!==UP) nextDir=DOWN;
+  let tx, ty;
+  canvas.addEventListener('touchstart', e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  canvas.addEventListener('touchend', e=>{
+    const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    nextDir = Math.abs(dx)>Math.abs(dy) ? (dx>0?1:3) : (dy>0?2:0);
+  },{passive:true});
+
+  function reset() { snake=[{x:9,y:13}]; dir=0; nextDir=0; score=0; food=rnd(); }
+
+  function draw() {
+    if (!snakeRunning) { document.removeEventListener('keydown', onKey); return; }
+    dir = nextDir;
+    const h = {...snake[0]};
+    if(dir===0)h.y--; if(dir===1)h.x++; if(dir===2)h.y++; if(dir===3)h.x--;
+    if(h.x<0||h.x>=COLS||h.y<0||h.y>=ROWS||snake.some(s=>s.x===h.x&&s.y===h.y)){
+      reset();
+    } else {
+      snake.unshift(h);
+      if(h.x===food.x&&h.y===food.y){ score++; food=rnd(); } else snake.pop();
+    }
+
+    /* bg */
+    ctx.fillStyle = '#141210'; ctx.fillRect(0,0,SIZE,SIZE);
+
+    /* grid */
+    ctx.strokeStyle = 'rgba(255,255,255,.035)'; ctx.lineWidth = 1;
+    for(let i=1;i<COLS;i++){ctx.beginPath();ctx.moveTo(i*bs,0);ctx.lineTo(i*bs,SIZE);ctx.stroke();}
+    for(let i=1;i<ROWS;i++){ctx.beginPath();ctx.moveTo(0,i*bs);ctx.lineTo(SIZE,i*bs);ctx.stroke();}
+
+    /* food */
+    const fx=food.x*bs, fy=food.y*bs, r=bs/2-2;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(fx+bs/2,fy+bs/2,r,0,Math.PI*2); ctx.clip();
+    ctx.drawImage(img,fx+2,fy+2,bs-4,bs-4);
+    ctx.restore();
+    ctx.strokeStyle='#c8deca'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(fx+bs/2,fy+bs/2,r,0,Math.PI*2); ctx.stroke();
+
+    /* snake — gradient from sage head to pink tail */
+    snake.forEach((s,i) => {
+      const t = i / Math.max(snake.length-1,1);
+      const r2 = Math.round(122 + (232-122)*t);
+      const g2 = Math.round(158 + (160-158)*t);
+      const b2 = Math.round(126 + (168-126)*t);
+      ctx.fillStyle = i===0 ? '#e8f4ea' : `rgb(${r2},${g2},${b2})`;
+      ctx.beginPath();
+      ctx.roundRect(s.x*bs+2, s.y*bs+2, bs-4, bs-4, 4);
+      ctx.fill();
     });
 
-    function resetGame(){
-        snake=[{x:Math.floor(COLS/2), y:ROWS-1}];
-        dir=UP; nextDir=UP;
-        score=0;
-        food={x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)};
-    }
-
-    function update(){
-        dir=nextDir;
-        let head={...snake[0]};
-        if(dir===LEFT) head.x--;
-        if(dir===UP) head.y--;
-        if(dir===RIGHT) head.x++;
-        if(dir===DOWN) head.y++;
-
-        if(head.x<0 || head.x>=COLS || head.y<0 || head.y>=ROWS || snake.some(s=>s.x===head.x && s.y===head.y)){
-            resetGame();
-            return;
-        }
-
-        snake.unshift(head);
-        if(head.x===food.x && head.y===food.y){
-            score++;
-            food={x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)};
-        } else { snake.pop(); }
-    }
-
-    function draw(){
-        ctx.fillStyle="#ffe6f0";
-        ctx.fillRect(0,0,size,size);
-
-        // snake
-        ctx.fillStyle="#ff77aa";
-        snake.forEach(s=>ctx.fillRect(s.x*blockSize, s.y*blockSize, blockSize, blockSize));
-
-        // food
-        let fx = food.x*blockSize, fy = food.y*blockSize;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(fx+blockSize/2, fy+blockSize/2, blockSize/2,0,Math.PI*2);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(foodImg, fx, fy, blockSize, blockSize);
-        ctx.restore();
-
-        ctx.fillStyle="#B57281";
-        ctx.font="16px Poppins";
-        ctx.fillText("Score: "+score,10,size-10);
-    }
-
-    function loop(){
-        update();
-        draw();
-        if(canvas.style.display!=="none") setTimeout(loop, 200);
-    }
-    loop();
+    /* score */
+    ctx.fillStyle = 'rgba(255,255,255,.45)';
+    ctx.font = `600 ${Math.round(bs*.58)}px 'Syne',sans-serif`;
+    ctx.fillText('✦ ' + score, 7, SIZE-7);
+    setTimeout(draw, 145);
+  }
+  draw();
 }
 </script>
 

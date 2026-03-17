@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spotify Mood Map — Khushi Chowdhury</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+:root {
+  --bg:         #f9f7f4;
+  --ink:        #1e1c1a;
+  --muted:      #7a7168;
+  --sage:       #7a9e7e;
+  --sage-light: #c8deca;
+  --sage-pale:  #eaf2eb;
+  --pink:       #e0788a;
+  --pink-light: #f2b8c2;
+  --pink-pale:  #fce8ec;
+  --border:     #e4ddd6;
+  --serif:      'Instrument Serif', serif;
+  --sans:       'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #b8b0a833 1px, transparent 1px);
+  background-size: 30px 30px; pointer-events: none; z-index: 0; opacity: .4;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 52px;
+  background: rgba(249,247,244,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--serif); font-size: 1.1rem; font-style: italic; color: var(--ink); text-decoration: none; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; padding: 7px 16px;
+  border-radius: 100px; border: 1px solid var(--border);
+  transition: border-color .2s, color .2s;
+}
+.back-link:hover { border-color: var(--pink); color: var(--pink); }
+
+/* HERO */
+.hero {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto; padding: 64px 32px 40px;
+}
+.project-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 18px;
+}
+.project-eyebrow::before { content:''; width:24px; height:2px; background:var(--pink); border-radius:2px; }
+h1 {
+  font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.05; letter-spacing: -.02em; color: var(--ink); margin-bottom: 18px;
+}
+h1 em { font-style: italic; color: var(--sage); }
+.project-desc { font-size: 1rem; color: var(--muted); line-height: 1.82; max-width: 620px; margin-bottom: 28px; }
+
+/* LOGIN STATE */
+#loginSection {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto; padding: 0 32px 80px;
+}
+.login-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px;
+  padding: 52px 40px; text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 20px;
+}
+.login-icon { font-size: 3rem; }
+.login-card h2 { font-family: var(--serif); font-size: 1.8rem; font-style: italic; color: var(--ink); }
+.login-card p { font-size: .95rem; color: var(--muted); line-height: 1.7; max-width: 420px; }
+.spotify-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px; background: #1DB954; color: #fff;
+  font-family: var(--sans); font-size: .85rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  border: none; border-radius: 100px; cursor: pointer;
+  transition: transform .18s, box-shadow .18s, background .18s;
+  box-shadow: 0 4px 20px rgba(29,185,84,.25);
+}
+.spotify-btn:hover { background: #17a349; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(29,185,84,.35); }
+
+.permissions-note {
+  font-size: .76rem; color: var(--muted); display: flex; align-items: center; gap: 6px;
+}
+.permissions-note i { color: var(--sage); }
+
+/* LOADING */
+#loadingSection {
+  display: none; position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto; padding: 0 32px 80px;
+}
+.loading-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px;
+  padding: 52px 40px; text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+}
+.spinner {
+  width: 44px; height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--sage);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-card p { font-size: .9rem; color: var(--muted); }
+
+/* DASHBOARD */
+#dashboard {
+  display: none; position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto; padding: 0 32px 80px;
+}
+
+/* user bar */
+.user-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+  background: #fff; border: 1px solid var(--border); border-radius: 18px;
+  padding: 18px 24px; margin-bottom: 24px;
+}
+.user-info { display: flex; align-items: center; gap: 14px; }
+.user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--sage-pale); }
+.user-avatar-placeholder {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--sage-pale); display: grid; place-items: center;
+  font-size: 1.2rem;
+}
+.user-name { font-weight: 700; font-size: .95rem; color: var(--ink); }
+.user-sub { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+.logout-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .74rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); background: none; border: 1px solid var(--border);
+  padding: 7px 16px; border-radius: 100px; cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.logout-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+/* range toggle */
+.range-toggle {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.range-btn {
+  font-family: var(--sans); font-size: .72rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 7px 18px; border-radius: 100px; border: 1px solid var(--border);
+  background: #fff; color: var(--muted); cursor: pointer; transition: all .18s;
+}
+.range-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.range-btn:hover:not(.active) { border-color: var(--sage); color: var(--sage); }
+
+/* viz cards */
+.viz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 24px;
+  padding: 32px; margin-bottom: 22px;
+}
+.viz-card h2 { font-family: var(--serif); font-size: 1.45rem; font-style: italic; color: var(--ink); margin-bottom: 6px; }
+.viz-sub { font-size: .86rem; color: var(--muted); line-height: 1.65; margin-bottom: 26px; }
+
+/* top tracks list */
+.track-list { display: flex; flex-direction: column; gap: 10px; }
+.track-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border);
+  transition: background .18s;
+}
+.track-row:hover { background: var(--bg); }
+.track-rank { font-family: var(--serif); font-size: 1.1rem; font-style: italic; color: var(--pink-light); width: 28px; flex-shrink: 0; text-align: center; }
+.track-img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--sage-pale); }
+.track-info { flex: 1; min-width: 0; }
+.track-name { font-weight: 600; font-size: .9rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-artist { font-size: .78rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-bar-wrap { width: 80px; flex-shrink: 0; }
+.track-bar-label { font-size: .65rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.track-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.track-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--sage), var(--pink)); }
+
+/* genre chips */
+.genre-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.genre-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: 100px; border: 1px solid var(--border);
+  font-size: .8rem; font-weight: 600; background: #fff; color: var(--ink);
+  transition: transform .15s;
+}
+.genre-chip:hover { transform: translateY(-2px); }
+.genre-chip .genre-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* stat row */
+.stat-row-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+.stat-mini {
+  background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 22px 20px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.stat-mini .num { font-family: var(--serif); font-size: 2rem; font-style: italic; color: var(--sage); line-height: 1; }
+.stat-mini .lbl { font-size: .74rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* error */
+.error-card {
+  background: var(--pink-pale); border: 1px solid var(--pink-light); border-radius: 18px;
+  padding: 24px; display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px;
+}
+.error-card i { color: var(--pink); margin-top: 2px; }
+.error-card p { font-size: .88rem; color: var(--ink); line-height: 1.6; }
+
+/* FOOTER */
+footer {
+  position: relative; z-index: 1; border-top: 1px solid var(--border);
+  background: var(--ink); padding: 36px 52px 28px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+}
+.footer-name { font-family: var(--serif); font-size: 1.15rem; font-style: italic; color: #fff; }
+.footer-copy { font-size: .72rem; color: rgba(255,255,255,.22); }
+.footer-link { color: rgba(255,255,255,.45); text-decoration: none; font-size: .74rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.footer-link:hover { color: var(--sage); }
+
+@media (max-width: 600px) {
+  nav { padding: 14px 20px; }
+  .hero, #loginSection, #loadingSection, #dashboard { padding-left: 20px; padding-right: 20px; }
+  .stat-row-grid { grid-template-columns: 1fr 1fr; }
+  .track-bar-wrap { display: none; }
+  footer { padding: 32px 20px 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Khushi Chowdhury</a>
+  <a href="index.html#projects" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</nav>
+
+<div class="hero">
+  <div class="project-eyebrow">Data Visualisation</div>
+  <h1>Spotify<br><em>Mood Map</em></h1>
+  <p class="project-desc">Connect your Spotify account to visualise your real listening data — your top tracks, favourite genres, and the audio fingerprint of your taste.</p>
+</div>
+
+<!-- LOGIN -->
+<div id="loginSection">
+  <div class="login-card">
+    <div class="login-icon">🎵</div>
+    <h2>Connect your Spotify</h2>
+    <p>Log in with Spotify to see your personalised mood map — built from your actual top tracks and listening history.</p>
+    <button class="spotify-btn" onclick="login()">
+      <i class="fa-brands fa-spotify"></i> Connect with Spotify
+    </button>
+    <div class="permissions-note">
+      <i class="fa-solid fa-lock"></i>
+      Read-only access · your data never leaves your browser
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loadingSection">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <p id="loadingMsg">Connecting to Spotify…</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <div class="user-bar">
+    <div class="user-info">
+      <div id="userAvatar" class="user-avatar-placeholder">🎵</div>
+      <div>
+        <div class="user-name" id="userName">—</div>
+        <div class="user-sub" id="userSub">Spotify listener</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Disconnect</button>
+  </div>
+
+  <!-- time range -->
+  <div class="range-toggle">
+    <button class="range-btn active" data-range="short_term" onclick="switchRange(this)">Last 4 weeks</button>
+    <button class="range-btn" data-range="medium_term" onclick="switchRange(this)">Last 6 months</button>
+    <button class="range-btn" data-range="long_term" onclick="switchRange(this)">All time</button>
+  </div>
+
+  <!-- stats -->
+  <div class="stat-row-grid">
+    <div class="stat-mini"><div class="num" id="statTracks">—</div><div class="lbl">Top tracks</div></div>
+    <div class="stat-mini"><div class="num" id="statGenres">—</div><div class="lbl">Genres found</div></div>
+    <div class="stat-mini"><div class="num" id="statEnergy">—</div><div class="lbl">Avg energy</div></div>
+  </div>
+
+  <!-- top tracks -->
+  <div class="viz-card">
+    <h2>Your Top Tracks</h2>
+    <p class="viz-sub">Your most-played songs for this period, with energy levels.</p>
+    <div class="track-list" id="trackList"></div>
+  </div>
+
+  <!-- genres -->
+  <div class="viz-card">
+    <h2>Your Top Genres</h2>
+    <p class="viz-sub">Derived from the artists you listen to most.</p>
+    <div class="genre-grid" id="genreGrid"></div>
+  </div>
+
+  <!-- scatter -->
+  <div class="viz-card">
+    <h2>Energy vs. Valence</h2>
+    <p class="viz-sub">Where your top tracks sit emotionally — energy (intensity) vs. valence (happiness). Hover for track names.</p>
+    <canvas id="scatterChart" height="380"></canvas>
+  </div>
+
+  <!-- radar -->
+  <div class="viz-card">
+    <h2>Your Audio Fingerprint</h2>
+    <p class="viz-sub">The average audio profile of your top tracks across six Spotify features.</p>
+    <canvas id="radarChart" height="340"></canvas>
+  </div>
+
+  <!-- recently played -->
+  <div class="viz-card">
+    <h2>Recently Played</h2>
+    <p class="viz-sub">Your last 20 tracks.</p>
+    <div class="track-list" id="recentList"></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-name">Khushi Chowdhury</div>
+  <a href="index.html" class="footer-link">← Portfolio</a>
+  <p class="footer-copy">© 2025 Khushi Chowdhury</p>
+</footer>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const CLIENT_ID    = '2879ed5308264d71878b61d03f2f40cd';
+const REDIRECT_URI = 'https://khushichow.com/spotify_mood.html';
+const SCOPES       = 'user-top-read user-read-recently-played user-read-private';
+
+// ── PKCE HELPERS ──────────────────────────────────────
+function randString(len) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from(crypto.getRandomValues(new Uint8Array(len))).map(b => chars[b % chars.length]).join('');
+}
+async function sha256(plain) {
+  const data = new TextEncoder().encode(plain);
+  return crypto.subtle.digest('SHA-256', data);
+}
+function base64url(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+async function login() {
+  const verifier = randString(64);
+  const challenge = base64url(await sha256(verifier));
+  sessionStorage.setItem('pkce_verifier', verifier);
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID, response_type: 'code',
+    redirect_uri: REDIRECT_URI, scope: SCOPES,
+    code_challenge_method: 'S256', code_challenge: challenge,
+  });
+  window.location = 'https://accounts.spotify.com/authorize?' + params;
+}
+
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('pkce_verifier');
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: CLIENT_ID, grant_type: 'authorization_code',
+      code, redirect_uri: REDIRECT_URI, code_verifier: verifier,
+    })
+  });
+  if (!res.ok) throw new Error('Token exchange failed');
+  return res.json();
+}
+
+function saveTokens(data) {
+  localStorage.setItem('sp_access',  data.access_token);
+  localStorage.setItem('sp_refresh', data.refresh_token);
+  localStorage.setItem('sp_expiry',  Date.now() + data.expires_in * 1000);
+}
+
+async function getToken() {
+  const expiry = parseInt(localStorage.getItem('sp_expiry') || '0');
+  if (Date.now() < expiry - 30000) return localStorage.getItem('sp_access');
+  // refresh
+  const refresh = localStorage.getItem('sp_refresh');
+  if (!refresh) return null;
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: CLIENT_ID, grant_type: 'refresh_token', refresh_token: refresh })
+  });
+  if (!res.ok) { logout(); return null; }
+  const data = await res.json();
+  saveTokens(data);
+  return data.access_token;
+}
+
+function logout() {
+  ['sp_access','sp_refresh','sp_expiry'].forEach(k => localStorage.removeItem(k));
+  sessionStorage.removeItem('pkce_verifier');
+  show('loginSection');
+}
+
+// ── SPOTIFY API ───────────────────────────────────────
+async function api(path, token) {
+  const res = await fetch('https://api.spotify.com/v1' + path, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
+  if (!res.ok) throw new Error('API error ' + res.status);
+  return res.json();
+}
+
+// ── UI HELPERS ────────────────────────────────────────
+function show(id) {
+  ['loginSection','loadingSection','dashboard'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? '' : 'none';
+  });
+}
+function setMsg(m) { document.getElementById('loadingMsg').textContent = m; }
+
+// ── CHARTS ────────────────────────────────────────────
+let scatterChart, radarChart;
+
+function buildScatter(tracks, features) {
+  const data = tracks.map((t, i) => ({
+    x: features[i] ? parseFloat((features[i].valence * 100).toFixed(1)) : null,
+    y: features[i] ? parseFloat((features[i].energy * 100).toFixed(1)) : null,
+    label: t.name + ' — ' + t.artists[0].name,
+  })).filter(d => d.x !== null);
+
+  if (scatterChart) scatterChart.destroy();
+  scatterChart = new Chart(document.getElementById('scatterChart'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Tracks',
+        data: data.map(d => ({ x: d.x, y: d.y })),
+        backgroundColor: data.map((_, i) => {
+          const t = i / data.length;
+          return `rgba(${Math.round(122+(224-122)*t)},${Math.round(158+(120-158)*t)},${Math.round(126+(138-126)*t)},0.8)`;
+        }),
+        borderColor: 'transparent',
+        pointRadius: 8, pointHoverRadius: 11,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1c1a', titleColor: '#fff', bodyColor: 'rgba(255,255,255,.7)',
+          padding: 12, cornerRadius: 10,
+          callbacks: {
+            label: ctx => {
+              const d = data[ctx.dataIndex];
+              return [d.label, `Energy: ${ctx.parsed.y}%`, `Valence: ${ctx.parsed.x}%`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: { min:0, max:100, title:{ display:true, text:'Valence (Sad → Happy)', font:{family:"'Syne'",size:12,weight:'600'}, color:'#7a7168' },
+          grid:{color:'rgba(0,0,0,.05)'}, ticks:{color:'#7a7168',font:{family:"'Syne'"},callback:v=>v+'%'} },
+        y: { min:0, max:100, title:{ display:true, text:'Energy (Calm → Intense)', font:{family:"'Syne'",size:12,weight:'600'}, color:'#7a7168' },
+          grid:{color:'rgba(0,0,0,.05)'}, ticks:{color:'#7a7168',font:{family:"'Syne'"},callback:v=>v+'%'} },
+      }
+    }
+  });
+}
+
+function buildRadar(features) {
+  const avg = f => Math.round(features.reduce((s,x) => s + (x[f]||0), 0) / features.length * 100);
+  const vals = ['energy','valence','danceability','acousticness','speechiness','instrumentalness'].map(avg);
+
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Energy','Valence','Danceability','Acousticness','Speechiness','Instrumentalness'],
+      datasets: [{
+        label: 'Your taste',
+        data: vals,
+        borderColor: '#7a9e7e', backgroundColor: 'rgba(122,158,126,.15)',
+        borderWidth: 2.5, pointBackgroundColor: '#7a9e7e', pointRadius: 5, pointHoverRadius: 7,
+      },{
+        label: 'Average listener',
+        data: [65,55,68,20,8,12],
+        borderColor: '#e0788a', backgroundColor: 'rgba(224,120,138,.1)',
+        borderWidth: 2, pointBackgroundColor: '#e0788a', pointRadius: 4, pointHoverRadius: 6,
+        borderDash: [5,4],
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position:'bottom', labels:{ color:'#7a7168', font:{family:"'Syne'",size:12}, padding:20, usePointStyle:true } },
+        tooltip: { backgroundColor:'#1e1c1a', titleColor:'#fff', bodyColor:'rgba(255,255,255,.7)', padding:10, cornerRadius:8 }
+      },
+      scales: {
+        r: {
+          min:0, max:100,
+          ticks:{ display:false },
+          grid:{ color:'rgba(0,0,0,.06)' },
+          pointLabels:{ color:'#7a7168', font:{family:"'Syne'",size:12,weight:'600'} },
+          angleLines:{ color:'rgba(0,0,0,.06)' },
+        }
+      }
+    }
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────
+function renderTracks(tracks, features, containerId) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  tracks.slice(0,20).forEach((t, i) => {
+    const energy = features[i] ? Math.round(features[i].energy * 100) : null;
+    const img = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || '';
+    el.innerHTML += `
+      <div class="track-row">
+        <div class="track-rank">${i+1}</div>
+        ${img ? `<img class="track-img" src="${img}" alt="">` : '<div class="track-img"></div>'}
+        <div class="track-info">
+          <div class="track-name">${t.name}</div>
+          <div class="track-artist">${t.artists.map(a=>a.name).join(', ')}</div>
+        </div>
+        ${energy !== null ? `
+        <div class="track-bar-wrap">
+          <div class="track-bar-label">Energy</div>
+          <div class="track-bar-track"><div class="track-bar-fill" style="width:${energy}%"></div></div>
+        </div>` : ''}
+      </div>`;
+  });
+}
+
+function renderRecent(items) {
+  const el = document.getElementById('recentList');
+  el.innerHTML = '';
+  items.slice(0,20).forEach((item, i) => {
+    const t = item.track;
+    const img = t.album?.images?.[2]?.url || '';
+    el.innerHTML += `
+      <div class="track-row">
+        <div class="track-rank">${i+1}</div>
+        ${img ? `<img class="track-img" src="${img}" alt="">` : '<div class="track-img"></div>'}
+        <div class="track-info">
+          <div class="track-name">${t.name}</div>
+          <div class="track-artist">${t.artists.map(a=>a.name).join(', ')}</div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderGenres(artists) {
+  const counts = {};
+  artists.forEach(a => a.genres.forEach(g => counts[g] = (counts[g]||0)+1));
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  const max = sorted[0]?.[1] || 1;
+  const palette = ['#7a9e7e','#e0788a','#b8d4ba','#f2b8c2','#94b896','#ddb0b8','#a8cc9a','#f0c8c4','#6e8c72','#e0a8b0'];
+  const el = document.getElementById('genreGrid');
+  el.innerHTML = sorted.map(([g, c], i) => `
+    <div class="genre-chip">
+      <span class="genre-dot" style="background:${palette[i%palette.length]}"></span>
+      ${g}
+    </div>`).join('');
+  document.getElementById('statGenres').textContent = sorted.length;
+}
+
+// ── LOAD DATA ─────────────────────────────────────────
+let currentRange = 'short_term';
+
+async function loadData(range) {
+  currentRange = range;
+  show('loadingSection');
+  try {
+    const token = await getToken();
+    if (!token) { show('loginSection'); return; }
+
+    setMsg('Fetching your profile…');
+    const me = await api('/me', token);
+    document.getElementById('userName').textContent = me.display_name || 'Spotify User';
+    document.getElementById('userSub').textContent = `${me.followers?.total?.toLocaleString() || 0} followers`;
+    const avatarEl = document.getElementById('userAvatar');
+    if (me.images?.[0]?.url) {
+      avatarEl.outerHTML = `<img class="user-avatar" id="userAvatar" src="${me.images[0].url}" alt="">`;
+    }
+
+    setMsg('Fetching your top tracks…');
+    const topTracksData = await api(`/me/top/tracks?limit=50&time_range=${range}`, token);
+    const tracks = topTracksData.items;
+
+    setMsg('Analysing audio features…');
+    const ids = tracks.map(t=>t.id).join(',');
+    const featData = await api(`/audio-features?ids=${ids}`, token);
+    const features = featData.audio_features;
+
+    setMsg('Fetching top artists…');
+    const topArtistsData = await api(`/me/top/artists?limit=50&time_range=${range}`, token);
+
+    setMsg('Fetching recently played…');
+    const recentData = await api('/me/player/recently-played?limit=20', token);
+
+    // stats
+    document.getElementById('statTracks').textContent = tracks.length;
+    const avgEnergy = features.filter(Boolean).reduce((s,f)=>s+f.energy,0)/features.filter(Boolean).length;
+    document.getElementById('statEnergy').textContent = Math.round(avgEnergy*100)+'%';
+
+    renderTracks(tracks, features, 'trackList');
+    renderGenres(topArtistsData.items);
+    buildScatter(tracks, features);
+    buildRadar(features.filter(Boolean));
+    renderRecent(recentData.items);
+
+    show('dashboard');
+  } catch(e) {
+    console.error(e);
+    show('dashboard');
+    document.getElementById('dashboard').insertAdjacentHTML('afterbegin', `
+      <div class="error-card">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p>Couldn't load your data. Please try disconnecting and reconnecting your Spotify account.</p>
+      </div>`);
+  }
+}
+
+function switchRange(btn) {
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadData(btn.dataset.range);
+}
+
+// ── INIT ──────────────────────────────────────────────
+async function init() {
+  // handle OAuth callback
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  if (error) {
+    window.history.replaceState({}, '', window.location.pathname);
+    show('loginSection');
+    return;
+  }
+
+  if (code) {
+    window.history.replaceState({}, '', window.location.pathname);
+    show('loadingSection');
+    setMsg('Connecting to Spotify…');
+    try {
+      const tokens = await exchangeCode(code);
+      saveTokens(tokens);
+    } catch(e) {
+      show('loginSection');
+      return;
+    }
+  }
+
+  const token = await getToken();
+  if (token) {
+    loadData(currentRange);
+  } else {
+    show('loginSection');
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
